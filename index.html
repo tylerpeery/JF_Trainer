@@ -134,7 +134,15 @@
             fictional, nonsensitive scenarios.
           </p>
         </div>
-        <div class="catalog-list" id="catalog-list"></div>
+        <div class="catalog-browser">
+          <div id="catalog-filter-root"></div>
+          <section class="catalog-results-region" aria-labelledby="catalog-results-title">
+            <h3 class="visually-hidden" id="catalog-results-title">Catalog results</h3>
+            <div id="catalog-toolbar-root"></div>
+            <div id="catalog-active-filter-root"></div>
+            <div class="catalog-list" id="catalog-list"></div>
+          </section>
+        </div>
       </section>
 
       <section class="view-panel" data-view-panel="progress" aria-labelledby="progress-title" hidden>

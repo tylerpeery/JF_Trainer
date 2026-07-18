@@ -108,6 +108,7 @@ Scope:
 - Add internal applied-practice cards.
 - Keep recommendation logic separate from UI and storage code.
 - Keep recommendation weights and thresholds editable in JSON.
+- Add catalog browsing filters for practical AI fluency, technical orientation, learning category, tags, professional field, and work pattern.
 
 Acceptance criteria:
 
@@ -115,6 +116,7 @@ Acceptance criteria:
 - Each active production catalog record has verification evidence, an official source URL, a last verified date, an access classification, and either an official duration or a clear no-duration claim.
 - Inactive provisional records are not recommended.
 - Recommendation logic has no UI or storage dependency.
+- Catalog browsing filters use existing resource metadata without broadening records to unsupported fields or work patterns.
 - Every generated path includes AI foundation, responsible use and output evaluation, role-aligned application, hands-on practice, and optional deeper learning.
 - `node --test` passes for recommendation path coverage, catalog validation, and Phase 2 regression tests.
 - No Phase 4 progress tracking, completion controls, milestones, or achievement calculation is implemented.

@@ -168,6 +168,7 @@ Implemented through Phase 6:
 - Plain-language result evidence without showing raw numeric scores in the normal interface
 - Profile accuracy feedback
 - Verified free external training-resource records with evidence notes
+- Filterable catalog browsing by practical fluency, technical orientation, learning category, tags, professional field, and work pattern
 - Deterministic recommendation scoring using editable JSON weights and thresholds
 - Five-stage recommended learning path
 - Internal fictional applied-practice cards

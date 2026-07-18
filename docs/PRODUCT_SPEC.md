@@ -521,6 +521,8 @@ Inactive provisional records may be retained for manually reviewed resources, re
 
 The catalog remains editable as JSON without an administrator interface.
 
+Catalog browsing should let users filter resources and internal practice cards by broad professional field, work pattern, practical AI fluency, technical orientation, learning path stage, and tags. Filters must use configured nonsensitive categories and must not ask users for mission, unit, system, location, or operational details.
+
 ## Applied Practice Cards
 
 The app should include short internal practice cards using fictional, nonsensitive information. These should take approximately 15 to 30 minutes and supplement external training where free specialty-specific courses are unavailable.
@@ -633,6 +635,7 @@ Implemented through Phase 6:
 - User feedback on whether the calculated profile seems accurate
 - Guest localStorage foundation for assessment results
 - Verified free-resource catalog with source evidence notes
+- Filterable catalog browsing by configured levels, learning category, tags, professional field, and work pattern
 - Deterministic recommendation scoring using editable JSON weights and thresholds
 - Five-stage learning path generation
 - Plain-language recommendation explanations

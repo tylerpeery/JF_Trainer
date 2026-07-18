@@ -1,4 +1,12 @@
 import { loadCatalog } from "./catalog.js";
+import {
+  browsableCatalogItems,
+  catalogFilterOptions,
+  countActiveFilters,
+  createDefaultCatalogFilters,
+  filterCatalogItems,
+  sortCatalogItems
+} from "./catalog-filters.js";
 import { loadConfiguration } from "./configuration.js";
 import { calculateProfile } from "./assessment.js";
 import { validateAssessmentAnswers } from "./assessment-validation.js";
@@ -13,6 +21,23 @@ const statusPanel = document.querySelector(".status-panel");
 const statusText = document.querySelector("#app-status");
 const mainContent = document.querySelector("#main-content");
 let storageManager = createStorageManager();
+let catalogFilters = createDefaultCatalogFilters();
+let catalogDrawerOpen = false;
+const catalogFilterGroupState = {
+  professionalField: true,
+  workPattern: true,
+  practicalFluency: true,
+  technicalOrientation: false,
+  pathStage: true,
+  provider: false,
+  format: false,
+  duration: false,
+  certificate: false,
+  access: false,
+  completion: false,
+  tags: false
+};
+const catalogFilterShowAll = {};
 const appData = {
   appConfig: null,
   assessmentConfig: null,
@@ -354,8 +379,8 @@ function createProgressControls(resourceId) {
   return wrapper;
 }
 
-function createOptionInput({ type, name, value, label, description = "", checked = false }) {
-  const optionId = `${name}-${String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+function createOptionInput({ type, name, value, label, description = "", checked = false, idPrefix = "" }) {
+  const optionId = `${idPrefix}${name}-${String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
   const wrapper = document.createElement("label");
   wrapper.className = "option-row";
   wrapper.setAttribute("for", optionId);
@@ -897,6 +922,382 @@ function renderPathStages(stages) {
   container.replaceChildren(list);
 }
 
+const catalogFilterGroups = [
+  { name: "professionalField", title: "Professional field", limit: 6 },
+  { name: "workPattern", title: "Work pattern", limit: 6 },
+  { name: "practicalFluency", title: "Practical AI fluency", limit: 4 },
+  { name: "technicalOrientation", title: "Technical orientation", limit: 4 },
+  { name: "pathStage", title: "Learning category", limit: 5 },
+  { name: "provider", title: "Provider", limit: 5 },
+  { name: "format", title: "Format", limit: 5 },
+  { name: "duration", title: "Duration", limit: 5 },
+  { name: "certificate", title: "Certificate availability", limit: 5 },
+  { name: "access", title: "Access status", limit: 5 },
+  { name: "completion", title: "Progress status", limit: 3 },
+  { name: "tags", title: "Tags", limit: 8 }
+];
+
+function catalogProgressRecords() {
+  return storageManager.getSnapshot().state.progress.resourceStates || {};
+}
+
+function resetCatalogFilters() {
+  catalogFilters = createDefaultCatalogFilters();
+  renderCatalog(appData.catalog, appData.practiceCards);
+}
+
+function updateCatalogFilter(name, values) {
+  catalogFilters = {
+    ...catalogFilters,
+    [name]: values
+  };
+  renderCatalog(appData.catalog, appData.practiceCards);
+}
+
+function optionLookup(options) {
+  const lookup = {};
+
+  Object.entries(options).forEach(([groupName, groupOptions]) => {
+    lookup[groupName] = new Map(groupOptions.map((option) => [option.id, option.label]));
+  });
+
+  return lookup;
+}
+
+function catalogFilterDescriptors(options) {
+  const lookup = optionLookup(options);
+  const descriptors = [];
+
+  if (catalogFilters.search.trim()) {
+    descriptors.push({
+      group: "search",
+      groupLabel: "Search",
+      value: catalogFilters.search,
+      label: `Search: ${catalogFilters.search}`,
+      removeLabel: "Clear search filter"
+    });
+  }
+
+  catalogFilterGroups.forEach((group) => {
+    const selectedValuesForGroup = catalogFilters[group.name] || [];
+    selectedValuesForGroup.forEach((value) => {
+      const label = lookup[group.name]?.get(value) || value;
+      descriptors.push({
+        group: group.name,
+        groupLabel: group.title,
+        value,
+        label,
+        removeLabel: `Remove ${group.title.toLowerCase()} filter ${label}`
+      });
+    });
+  });
+
+  return descriptors;
+}
+
+function removeCatalogFilter(descriptor) {
+  if (descriptor.group === "search") {
+    catalogFilters = {
+      ...catalogFilters,
+      search: ""
+    };
+  } else {
+    catalogFilters = {
+      ...catalogFilters,
+      [descriptor.group]: (catalogFilters[descriptor.group] || []).filter((value) => value !== descriptor.value)
+    };
+  }
+
+  renderCatalog(appData.catalog, appData.practiceCards);
+}
+
+function createCatalogFilterGroup({ group, options = [], idPrefix }) {
+  const section = document.createElement("section");
+  section.className = "catalog-filter-group";
+  const isOpen = catalogFilterGroupState[group.name] !== false;
+  const contentId = `${idPrefix}-${group.name}-content`;
+  const visibleOptions = catalogFilterShowAll[group.name] ? options : options.slice(0, group.limit);
+
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "catalog-filter-toggle";
+  toggle.setAttribute("aria-expanded", String(isOpen));
+  toggle.setAttribute("aria-controls", contentId);
+  toggle.textContent = group.title;
+  toggle.addEventListener("click", () => {
+    catalogFilterGroupState[group.name] = !isOpen;
+    renderCatalog(appData.catalog, appData.practiceCards);
+  });
+
+  const content = document.createElement("div");
+  content.id = contentId;
+  content.className = "catalog-filter-group-content";
+  content.hidden = !isOpen;
+
+  const optionStack = document.createElement("div");
+  optionStack.className = "option-stack catalog-filter-options";
+
+  visibleOptions.forEach((option) => {
+    optionStack.append(
+      createOptionInput({
+        type: "checkbox",
+        name: group.name,
+        value: option.id,
+        label: `${option.label} (${option.count || 0})`,
+        checked: catalogFilters[group.name]?.includes(option.id),
+        idPrefix: `${idPrefix}-`
+      })
+    );
+  });
+
+  if (options.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "selection-note";
+    empty.textContent = "No values available.";
+    content.append(empty);
+  } else {
+    content.append(optionStack);
+  }
+
+  if (options.length > group.limit) {
+    const showMore = document.createElement("button");
+    showMore.type = "button";
+    showMore.className = "secondary-action compact-action catalog-show-more";
+    showMore.textContent = catalogFilterShowAll[group.name] ? "Show fewer" : `Show ${options.length - group.limit} more`;
+    showMore.addEventListener("click", () => {
+      catalogFilterShowAll[group.name] = !catalogFilterShowAll[group.name];
+      renderCatalog(appData.catalog, appData.practiceCards);
+    });
+    content.append(showMore);
+  }
+
+  section.addEventListener("change", () => {
+    updateCatalogFilter(group.name, selectedValues(section, group.name));
+  });
+
+  section.append(toggle, content);
+  return section;
+}
+
+function createCatalogFilterControls({ options, idPrefix, includeClose = false, closeDialog = null }) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "catalog-filter-panel";
+
+  const header = document.createElement("div");
+  header.className = "catalog-filter-header";
+  const heading = document.createElement("h3");
+  heading.id = `${idPrefix}-title`;
+  heading.textContent = "Filters";
+  const activeCount = countActiveFilters(catalogFilters);
+
+  header.append(heading);
+
+  if (includeClose) {
+    const closeButton = document.createElement("button");
+    closeButton.type = "button";
+    closeButton.className = "secondary-action compact-action";
+    closeButton.textContent = "Close";
+    closeButton.addEventListener("click", () => closeDialog?.());
+    header.append(closeButton);
+  }
+
+  const helper = document.createElement("p");
+  helper.className = "selection-note catalog-filter-note";
+  helper.textContent = "Use broad, nonsensitive categories only. Do not disclose mission, unit, system, location, or operational details.";
+
+  const groups = document.createElement("div");
+  groups.className = "catalog-filter-groups";
+  catalogFilterGroups.forEach((group) => {
+    groups.append(createCatalogFilterGroup({ group, options: options[group.name] || [], idPrefix }));
+  });
+
+  const actions = document.createElement("div");
+  actions.className = "catalog-filter-actions";
+  const resetButton = document.createElement("button");
+  resetButton.type = "button";
+  resetButton.className = "secondary-action compact-action";
+  resetButton.textContent = activeCount > 0 ? `Reset filters (${activeCount})` : "Reset filters";
+  resetButton.disabled = activeCount === 0;
+  resetButton.addEventListener("click", resetCatalogFilters);
+  actions.append(resetButton);
+
+  wrapper.append(header, helper, groups, actions);
+  return wrapper;
+}
+
+function renderCatalogFilters(options) {
+  const root = document.querySelector("#catalog-filter-root");
+
+  if (!root) {
+    return;
+  }
+
+  const sidebar = document.createElement("aside");
+  sidebar.className = "catalog-sidebar";
+  sidebar.setAttribute("aria-labelledby", "catalog-sidebar-title");
+  sidebar.append(createCatalogFilterControls({ options, idPrefix: "catalog-sidebar" }));
+
+  const dialog = document.createElement("dialog");
+  dialog.className = "catalog-filter-dialog";
+  dialog.setAttribute("aria-labelledby", "catalog-dialog-title");
+
+  const closeDialog = () => {
+    catalogDrawerOpen = false;
+    dialog.close();
+  };
+
+  dialog.append(createCatalogFilterControls({
+    options,
+    idPrefix: "catalog-dialog",
+    includeClose: true,
+    closeDialog
+  }));
+
+  dialog.addEventListener("close", () => {
+    catalogDrawerOpen = false;
+    document.querySelector("[data-open-catalog-filters]")?.focus();
+  });
+
+  root.replaceChildren(sidebar, dialog);
+
+  if (catalogDrawerOpen && !dialog.open) {
+    window.requestAnimationFrame(() => {
+      if (!dialog.open) {
+        if (typeof dialog.showModal === "function") {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "");
+        }
+        dialog.querySelector("button, input, select")?.focus();
+      }
+    });
+  }
+}
+
+function renderCatalogToolbar(filteredItems, totalItems) {
+  const root = document.querySelector("#catalog-toolbar-root");
+
+  if (!root) {
+    return;
+  }
+
+  const toolbar = document.createElement("div");
+  toolbar.className = "catalog-toolbar";
+
+  const count = document.createElement("p");
+  count.className = "catalog-result-count";
+  count.setAttribute("aria-live", "polite");
+  count.textContent = `${filteredItems.length} training resources`;
+  if (filteredItems.length !== totalItems) {
+    count.textContent += ` of ${totalItems}`;
+  }
+
+  const searchLabel = document.createElement("label");
+  searchLabel.className = "catalog-search";
+  searchLabel.setAttribute("for", "catalog-search");
+  const searchText = document.createElement("span");
+  searchText.className = "visually-hidden";
+  searchText.textContent = "Search catalog";
+  const searchInput = document.createElement("input");
+  searchInput.id = "catalog-search";
+  searchInput.type = "search";
+  searchInput.placeholder = "Search title, provider, tags";
+  searchInput.value = catalogFilters.search;
+  searchInput.addEventListener("input", () => {
+    catalogFilters = {
+      ...catalogFilters,
+      search: searchInput.value
+    };
+    renderCatalog(appData.catalog, appData.practiceCards);
+  });
+  searchLabel.append(searchText, searchInput);
+
+  const sortLabel = document.createElement("label");
+  sortLabel.className = "catalog-sort";
+  sortLabel.setAttribute("for", "catalog-sort");
+  const sortText = document.createElement("span");
+  sortText.className = "visually-hidden";
+  sortText.textContent = "Sort catalog";
+  const sortSelect = document.createElement("select");
+  sortSelect.id = "catalog-sort";
+  [
+    ["title-asc", "Title"],
+    ["provider", "Provider"],
+    ["duration", "Shortest duration"]
+  ].forEach(([value, label]) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    option.selected = catalogFilters.sort === value;
+    sortSelect.append(option);
+  });
+  sortSelect.addEventListener("change", () => {
+    catalogFilters = {
+      ...catalogFilters,
+      sort: sortSelect.value
+    };
+    renderCatalog(appData.catalog, appData.practiceCards);
+  });
+  sortLabel.append(sortText, sortSelect);
+
+  const activeCount = countActiveFilters(catalogFilters);
+  const filterButton = document.createElement("button");
+  filterButton.type = "button";
+  filterButton.className = "secondary-action compact-action catalog-mobile-filter-button";
+  filterButton.dataset.openCatalogFilters = "true";
+  filterButton.textContent = activeCount > 0 ? `Filters (${activeCount})` : "Filters";
+  filterButton.addEventListener("click", () => {
+    catalogDrawerOpen = true;
+    renderCatalog(appData.catalog, appData.practiceCards);
+  });
+
+  const clearButton = document.createElement("button");
+  clearButton.type = "button";
+  clearButton.className = "secondary-action compact-action";
+  clearButton.textContent = "Clear all";
+  clearButton.hidden = activeCount === 0;
+  clearButton.addEventListener("click", resetCatalogFilters);
+
+  toolbar.append(count, searchLabel, sortLabel, filterButton, clearButton);
+  root.replaceChildren(toolbar);
+}
+
+function renderActiveCatalogFilters(options) {
+  const root = document.querySelector("#catalog-active-filter-root");
+
+  if (!root) {
+    return;
+  }
+
+  const descriptors = catalogFilterDescriptors(options);
+  if (descriptors.length === 0) {
+    root.replaceChildren();
+    return;
+  }
+
+  const chipBar = document.createElement("div");
+  chipBar.className = "active-filter-chips";
+
+  descriptors.forEach((descriptor) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "filter-chip";
+    chip.textContent = `${descriptor.label} x`;
+    chip.setAttribute("aria-label", descriptor.removeLabel);
+    chip.addEventListener("click", () => removeCatalogFilter(descriptor));
+    chipBar.append(chip);
+  });
+
+  const clearButton = document.createElement("button");
+  clearButton.type = "button";
+  clearButton.className = "secondary-action compact-action";
+  clearButton.textContent = "Clear all";
+  clearButton.addEventListener("click", resetCatalogFilters);
+  chipBar.append(clearButton);
+
+  root.replaceChildren(chipBar);
+}
+
 function createCatalogCard(resource) {
   const card = document.createElement("article");
   card.className = "catalog-card";
@@ -956,18 +1357,54 @@ function createCatalogCard(resource) {
 
 function renderCatalog(catalog, practiceCards) {
   const container = document.querySelector("#catalog-list");
-  const cards = [
-    ...catalog.map(createCatalogCard),
-    ...practiceCards.map((practiceCard) =>
-      createCatalogCard({
-        ...practiceCard,
-        evidenceNote: "Internal fictional practice card. It uses only nonsensitive sample scenarios.",
-        sampleData: false
-      })
-    )
-  ];
+  const activeElementId = document.activeElement?.id || "";
+  const selectionStart = typeof document.activeElement?.selectionStart === "number"
+    ? document.activeElement.selectionStart
+    : null;
+  const selectionEnd = typeof document.activeElement?.selectionEnd === "number"
+    ? document.activeElement.selectionEnd
+    : null;
+  const items = browsableCatalogItems(catalog, practiceCards);
+  const progressRecords = catalogProgressRecords();
+  const options = catalogFilterOptions(items, appData.appConfig || {}, progressRecords);
+  const filteredItems = sortCatalogItems(
+    filterCatalogItems(items, catalogFilters, progressRecords),
+    catalogFilters.sort
+  );
+  const restoreCatalogFocus = () => {
+    if (activeElementId === "catalog-search") {
+      const searchInput = document.querySelector("#catalog-search");
+      searchInput?.focus();
+      if (selectionStart !== null && selectionEnd !== null) {
+        searchInput?.setSelectionRange(selectionStart, selectionEnd);
+      }
+    }
+  };
 
-  container.replaceChildren(...cards);
+  renderCatalogFilters(options);
+  renderCatalogToolbar(filteredItems, items.length);
+  renderActiveCatalogFilters(options);
+
+  if (filteredItems.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "catalog-empty-state";
+    const heading = document.createElement("h3");
+    heading.textContent = "No training resources match the selected filters.";
+    const body = document.createElement("p");
+    body.textContent = "Try removing the most specific filters first, such as tags, duration, certificate, or completion status.";
+    const clearButton = document.createElement("button");
+    clearButton.type = "button";
+    clearButton.className = "primary-action compact-action";
+    clearButton.textContent = "Clear filters";
+    clearButton.addEventListener("click", resetCatalogFilters);
+    empty.append(heading, body, clearButton);
+    container.replaceChildren(empty);
+    restoreCatalogFocus();
+    return;
+  }
+
+  container.replaceChildren(...filteredItems.map(createCatalogCard));
+  restoreCatalogFocus();
 }
 
 function renderProgressDashboard() {

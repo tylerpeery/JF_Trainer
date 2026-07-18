@@ -382,6 +382,211 @@ select:focus-visible,
   min-width: 4.75rem;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.catalog-browser {
+  display: grid;
+  grid-template-columns: minmax(16.25rem, 18.75rem) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+  margin-top: 1rem;
+}
+
+.catalog-sidebar {
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+}
+
+.catalog-results-region {
+  min-width: 0;
+}
+
+.catalog-filter-panel {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #ffffff;
+  padding: 0.85rem;
+}
+
+.catalog-filter-header,
+.catalog-toolbar,
+.active-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.catalog-filter-header {
+  justify-content: space-between;
+}
+
+.catalog-filter-panel h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.catalog-filter-note {
+  margin: 0.45rem 0 0.65rem;
+}
+
+.catalog-filter-groups {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.catalog-filter-group {
+  border-top: 1px solid var(--color-border);
+  padding-top: 0.4rem;
+}
+
+.catalog-filter-toggle {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 2.25rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  padding: 0;
+  font-weight: 700;
+  text-align: left;
+}
+
+.catalog-filter-toggle::after {
+  content: "+";
+  color: var(--color-muted);
+}
+
+.catalog-filter-toggle[aria-expanded="true"]::after {
+  content: "-";
+}
+
+.catalog-filter-options {
+  gap: 0.35rem;
+  max-height: 13rem;
+  overflow: auto;
+  padding-right: 0.2rem;
+}
+
+.catalog-filter-options .option-row {
+  padding: 0.45rem 0.5rem;
+}
+
+.catalog-filter-options .option-text {
+  font-size: 0.92rem;
+}
+
+.catalog-show-more {
+  margin-top: 0.5rem;
+}
+
+.catalog-filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.catalog-toolbar {
+  justify-content: space-between;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #ffffff;
+  padding: 0.65rem;
+}
+
+.catalog-result-count {
+  margin: 0;
+  color: var(--color-muted);
+  font-weight: 700;
+}
+
+.catalog-search {
+  flex: 1 1 16rem;
+}
+
+.catalog-search input,
+.catalog-sort select {
+  width: 100%;
+  min-height: 2.35rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #ffffff;
+  color: var(--color-text);
+  padding: 0.45rem 0.6rem;
+}
+
+.catalog-sort {
+  flex: 0 1 11rem;
+}
+
+.catalog-mobile-filter-button {
+  display: none;
+}
+
+.active-filter-chips {
+  margin: 0.75rem 0;
+}
+
+.filter-chip {
+  min-height: 2rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: #f8fafc;
+  color: var(--color-primary-strong);
+  padding: 0.25rem 0.6rem;
+  font-weight: 700;
+}
+
+.filter-chip:hover {
+  background: #eef5f7;
+}
+
+.catalog-empty-state {
+  grid-column: 1 / -1;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #ffffff;
+  padding: 1rem;
+}
+
+.catalog-empty-state h3 {
+  margin: 0 0 0.5rem;
+}
+
+.catalog-filter-dialog {
+  width: min(24rem, calc(100% - 1rem));
+  max-height: min(42rem, calc(100vh - 2rem));
+  margin: auto 0 auto auto;
+  border: 0;
+  border-radius: var(--radius) 0 0 var(--radius);
+  box-shadow: var(--shadow-soft);
+  padding: 0;
+}
+
+.catalog-filter-dialog::backdrop {
+  background: rgba(29, 36, 51, 0.32);
+}
+
+.catalog-filter-dialog .catalog-filter-panel {
+  max-height: min(42rem, calc(100vh - 2rem));
+  overflow: auto;
+  border: 0;
+  border-radius: 0;
+}
+
 .path-preview ol,
 .stage-list ol {
   margin: 1rem 0 0;
@@ -409,6 +614,10 @@ select:focus-visible,
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
   margin-top: 1rem;
+}
+
+.catalog-results-region .catalog-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .summary-card,
@@ -859,14 +1068,24 @@ select:focus-visible,
   .intro-grid,
   .placeholder-grid,
   .catalog-list,
+  .catalog-results-region .catalog-list,
   .assessment-results,
   .assessment-grid,
   .path-item-grid,
   .progress-stats,
   .achievement-grid,
   .account-panel,
+  .catalog-browser,
   .state-summary {
     grid-template-columns: 1fr;
+  }
+
+  .catalog-sidebar {
+    display: none;
+  }
+
+  .catalog-mobile-filter-button {
+    display: inline-flex;
   }
 
   .intro-copy h2 {
@@ -898,6 +1117,20 @@ select:focus-visible,
   .progress-action-row {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .catalog-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .catalog-search,
+  .catalog-sort {
+    flex-basis: auto;
+  }
+
+  .catalog-filter-dialog {
+    width: min(100%, 24rem);
   }
 }
 
