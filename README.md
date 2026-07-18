@@ -6,7 +6,7 @@ Users will complete a short assessment, receive an explainable learning path, fo
 
 ## Project Status
 
-This project is implemented through Phase 4: Guest Progress, Milestones, and Achievements. Phase 4 includes the static application shell, safety warning, configuration data, Joint Force-oriented assessment flow, profile scoring with evidence explanations, verified free-resource catalog records, deterministic recommendations, internal practice cards, guest progress tracking, milestone displays, achievement displays, export, reset, tests, and profile-accuracy feedback.
+This project is implemented through Phase 6: Guest Transfer, Polish, And Pilot Readiness. Phase 6 includes the static application shell, safety warning, configuration data, Joint Force-oriented assessment flow, profile scoring with evidence explanations, verified free-resource catalog records, deterministic recommendations, internal practice cards, guest progress tracking, milestone displays, achievement displays, export, reset, optional Supabase authentication, hybrid account storage, Row Level Security SQL, guest-to-account import, accessible completion animation, tests, and profile-accuracy feedback.
 
 It is intended for a small pilot group of approximately 3 to 12 testers. It is not intended for large-scale deployment, enterprise use, official certification, or operational-readiness determinations.
 
@@ -27,6 +27,7 @@ Authoritative documentation:
 - Curated catalog of verified free external AI training
 - Guest mode using browser storage
 - Optional user accounts with globally saved progress
+- Guest-to-account progress import
 - Training completion tracking
 - Five- and ten-hour learning milestones
 - Professional achievements and progress indicators
@@ -42,7 +43,7 @@ The MVP uses:
 - JavaScript ES modules
 - GitHub Pages
 - Browser `localStorage` for guest mode
-- Supabase for optional authentication and globally saved progress, deferred until Phase 5
+- Supabase for optional authentication and account-saved progress
 - Static JSON configuration and catalog data
 - A deterministic, rules-based recommendation engine
 
@@ -66,10 +67,13 @@ ai-training-pathfinder/
 |   |-- assessment-questions.json
 |   |-- milestones.json
 |   |-- recommendation-config.json
+|   |-- supabase-config.json
 |   `-- training-resources.json
 |-- docs/
 |   |-- IMPLEMENTATION_PLAN.md
-|   `-- PRODUCT_SPEC.md
+|   |-- PILOT_READINESS_CHECKLIST.md
+|   |-- PRODUCT_SPEC.md
+|   `-- SUPABASE_SCHEMA.md
 |-- package.json
 |-- js/
 |   |-- app.js
@@ -78,14 +82,22 @@ ai-training-pathfinder/
 |   |-- catalog.js
 |   |-- configuration.js
 |   |-- progress.js
+|   |-- account-mode.js
 |   |-- recommendations.js
+|   |-- supabase-client.js
 |   `-- storage/
+|       |-- guest-transfer.js
 |       |-- local-storage.js
+|       |-- supabase-account-storage.js
 |       `-- storage-manager.js
+|-- supabase/
+|   `-- schema.sql
 `-- tests/
     |-- phase2-assessment.test.js
     |-- phase3-recommendations.test.js
-    `-- phase4-progress.test.js
+    |-- phase4-progress.test.js
+    |-- phase5-account-mode.test.js
+    `-- phase6-pilot-readiness.test.js
 ```
 
 ## Running Locally
@@ -137,9 +149,9 @@ https://USERNAME.github.io/REPOSITORY-NAME/
 
 All internal file paths should remain relative so the application works correctly from a GitHub Pages repository subdirectory.
 
-## Current Phase 4 Behavior
+## Current Phase 6 Behavior
 
-Implemented through Phase 4:
+Implemented through Phase 6:
 
 - Responsive static app shell
 - Landing page
@@ -163,8 +175,28 @@ Implemented through Phase 4:
 - Learning time, progress points, milestones, and professional achievements
 - Optional five- and ten-hour milestone reflections
 - Guest data export and reset
+- Supabase browser client setup, disabled by default until configured
+- Magic-link authentication UI for configured Supabase projects
+- Hybrid account storage adapter for authenticated user state and reportable rows
+- Row Level Security SQL in `supabase/schema.sql`
+- Guest-to-account import with stable-ID deduplication
+- Accessible completion animation with reduced-motion fallback
+- Pilot-readiness checklist in `docs/PILOT_READINESS_CHECKLIST.md`
 
-Phase 4 does not include Supabase, authentication, guest-to-account transfer, organization dashboards, automated certificate verification, or account sync.
+The completed MVP does not include organization dashboards, automated certificate verification, enterprise authentication, or official readiness certification.
+
+## Supabase Account Mode
+
+Account mode is disabled by default. To enable it for a Supabase project:
+
+1. Apply `supabase/schema.sql` in the Supabase SQL editor.
+2. Add the local and GitHub Pages URLs to Supabase Auth redirect allow-list settings.
+3. Set `enabled` to `true` in `data/supabase-config.json`.
+4. Add the Supabase project URL and browser-safe publishable key to `data/supabase-config.json`.
+
+Never place a service-role key, database password, or private secret in frontend code.
+
+The Supabase schema uses a hybrid storage model. `pathfinder_user_states` stores the full app snapshot for account sync, while reportable tables store profile, assessment, progress, feedback, reflection, and achievement rows for future dashboards. Dashboard UI and administrator reporting access are not implemented in the MVP.
 
 ## Training Catalog
 
@@ -186,7 +218,7 @@ Users should not enter:
 - Proprietary organizational information
 - Account credentials or passwords
 
-The MVP should collect only the minimum information required to create recommendations and track learning progress. Phase 4 stores guest assessment, progress, optional completion feedback, and optional milestone reflections in browser `localStorage` only.
+The MVP should collect only the minimum information required to create recommendations and track learning progress. Guest mode stores assessment, progress, optional completion feedback, and optional milestone reflections in browser `localStorage`; account mode stores the same app-managed state and reportable fields in Supabase by authenticated user ID. Signed-in users may import local guest data into their account. Supabase Auth handles sign-in email for account access; Pathfinder tables do not store email, rank, unit, mission, clearance, or operational details.
 
 ## Accessibility
 

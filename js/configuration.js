@@ -4,7 +4,8 @@ const CONFIG_FILES = {
   recommendation: "../data/recommendation-config.json",
   appliedPracticeCards: "../data/applied-practice-cards.json",
   milestones: "../data/milestones.json",
-  achievements: "../data/achievements.json"
+  achievements: "../data/achievements.json",
+  supabase: "../data/supabase-config.json"
 };
 
 async function fetchJson(path) {

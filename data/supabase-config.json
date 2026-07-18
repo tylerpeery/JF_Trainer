@@ -1,0 +1,7 @@
+{
+  "enabled": true,
+  "supabaseUrl": "https://lufnaryodfcptkydkrqr.supabase.co",
+  "supabasePublishableKey": "sb_publishable_yBq95LsdaxJQq3UPxAJQRA_Jbr2CK_C",
+  "sdkUrl": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm",
+  "authRedirectPath": "./"
+}

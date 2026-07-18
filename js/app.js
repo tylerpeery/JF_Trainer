@@ -2,6 +2,7 @@ import { loadCatalog } from "./catalog.js";
 import { loadConfiguration } from "./configuration.js";
 import { calculateProfile } from "./assessment.js";
 import { validateAssessmentAnswers } from "./assessment-validation.js";
+import { initializeAccountMode } from "./account-mode.js";
 import { buildProgressSummary } from "./progress.js";
 import { buildLearningPath } from "./recommendations.js";
 import { createStorageManager } from "./storage/storage-manager.js";
@@ -11,11 +12,12 @@ const navButtons = Array.from(document.querySelectorAll(".nav-link"));
 const statusPanel = document.querySelector(".status-panel");
 const statusText = document.querySelector("#app-status");
 const mainContent = document.querySelector("#main-content");
-const storageManager = createStorageManager();
+let storageManager = createStorageManager();
 const appData = {
   appConfig: null,
   assessmentConfig: null,
   recommendationConfig: null,
+  supabaseConfig: null,
   catalog: [],
   practiceCards: [],
   milestones: [],
@@ -30,6 +32,18 @@ function setStatus(message, isError = false) {
   statusText.textContent = message || "";
   statusPanel.hidden = !message;
   statusPanel.dataset.error = isError ? "true" : "false";
+}
+
+function showCompletionCelebration(message = "Completion recorded") {
+  const toast = document.createElement("div");
+  toast.className = "completion-celebration";
+  toast.setAttribute("aria-hidden", "true");
+  toast.textContent = message;
+  document.body.append(toast);
+
+  window.setTimeout(() => {
+    toast.remove();
+  }, 1800);
 }
 
 function setView(viewId, options = {}) {
@@ -199,6 +213,14 @@ function refreshProgressViews() {
   renderCatalog(appData.catalog, appData.practiceCards);
 }
 
+function renderDynamicViews() {
+  renderAssessment(appData.appConfig, appData.assessmentConfig);
+  renderPathProfileSummary();
+  renderCatalog(appData.catalog, appData.practiceCards);
+  renderProgressDashboard();
+  renderStorageState();
+}
+
 function createProgressControls(resourceId) {
   const item = findTrackableItem(resourceId);
   const wrapper = document.createElement("div");
@@ -282,20 +304,24 @@ function createProgressControls(resourceId) {
   completeButton.className = "primary-action compact-action";
   completeButton.textContent = record?.status === "completed" ? "Save feedback" : "Mark complete";
   completeButton.addEventListener("click", () => {
+    const wasCompleted = record?.status === "completed";
     const input = {
       completionDate: completionDate.input.value,
       takeaway: takeaway.input.value,
       relevance: relevance.input.value,
       difficulty: difficulty.input.value
     };
-    const result = record?.status === "completed"
+    const result = wasCompleted
       ? storageManager.saveResourceFeedback(resourceId, input)
       : storageManager.completeResource(item, item.type, input, appData.milestones, appData.achievements);
 
     setStatus(
-      result.recoverableError || (record?.status === "completed" ? "Progress feedback saved." : "Completion recorded."),
+      result.recoverableError || (wasCompleted ? "Progress feedback saved." : "Completion recorded."),
       Boolean(result.recoverableError)
     );
+    if (!wasCompleted && !result.recoverableError) {
+      showCompletionCelebration();
+    }
     refreshProgressViews();
   });
 
@@ -904,7 +930,7 @@ function createCatalogCard(resource) {
 
   const meta = document.createElement("p");
   meta.className = "resource-meta";
-  meta.textContent = `${resource.pathStage || "Resource"} • ${resource.format || "Format not stated"} • ${formatDuration(resource.estimatedMinutes, resource.durationNote)}`;
+  meta.textContent = `${resource.pathStage || "Resource"} - ${resource.format || "Format not stated"} - ${formatDuration(resource.estimatedMinutes, resource.durationNote)}`;
 
   const evidence = document.createElement("p");
   evidence.textContent = needsReview
@@ -1176,14 +1202,18 @@ function createGuestDataActions() {
   const section = document.createElement("section");
   section.className = "progress-section";
   section.setAttribute("aria-labelledby", "guest-data-title");
+  const { state } = storageManager.getSnapshot();
+  const isAccountMode = state.mode === "account";
 
   const heading = document.createElement("h3");
   heading.id = "guest-data-title";
-  heading.textContent = "Guest data";
+  heading.textContent = isAccountMode ? "Account data" : "Guest data";
 
   const description = document.createElement("p");
   description.className = "selection-note";
-  description.textContent = "Guest data is stored only in this browser. Export before resetting if you want a local record.";
+  description.textContent = isAccountMode
+    ? "Account data is saved to the configured Supabase project for the signed-in user. Export before resetting if you want a local record."
+    : "Guest data is stored only in this browser. Export before resetting if you want a local record.";
 
   const actions = document.createElement("div");
   actions.className = "progress-action-row";
@@ -1191,24 +1221,26 @@ function createGuestDataActions() {
   const exportButton = document.createElement("button");
   exportButton.type = "button";
   exportButton.className = "secondary-action compact-action";
-  exportButton.textContent = "Export guest data";
+  exportButton.textContent = isAccountMode ? "Export account data" : "Export guest data";
   exportButton.addEventListener("click", () => {
     const blob = new Blob([storageManager.exportGuestData()], { type: "application/json" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "ai-training-pathfinder-guest-data.json";
+    link.download = isAccountMode
+      ? "ai-training-pathfinder-account-data.json"
+      : "ai-training-pathfinder-guest-data.json";
     link.click();
     URL.revokeObjectURL(link.href);
-    setStatus("Guest data export prepared by your browser.", false);
+    setStatus(`${isAccountMode ? "Account" : "Guest"} data export prepared by your browser.`, false);
   });
 
   const resetButton = document.createElement("button");
   resetButton.type = "button";
   resetButton.className = "secondary-action compact-action danger-action";
-  resetButton.textContent = "Reset guest data";
+  resetButton.textContent = isAccountMode ? "Reset account data" : "Reset guest data";
   resetButton.addEventListener("click", () => {
     const confirmed = globalThis.confirm(
-      "Reset all guest assessment, progress, reflection, and achievement data stored in this browser?"
+      `Reset all ${isAccountMode ? "account" : "guest"} assessment, progress, reflection, and achievement data?`
     );
 
     if (!confirmed) {
@@ -1216,7 +1248,7 @@ function createGuestDataActions() {
     }
 
     const result = storageManager.resetGuestData();
-    setStatus(result.recoverableError || "Guest data reset.", Boolean(result.recoverableError));
+    setStatus(result.recoverableError || `${isAccountMode ? "Account" : "Guest"} data reset.`, Boolean(result.recoverableError));
     refreshProgressViews();
     setView("home", { focusMain: true });
   });
@@ -1235,7 +1267,7 @@ function renderStorageState() {
   const progressStatusElement = document.querySelector("#progress-storage-status");
   const summary = progressSummary();
 
-  modeElement.textContent = state.mode === "guest" ? "Guest" : state.mode;
+  modeElement.textContent = state.mode === "account" ? "Account" : "Guest";
   startedElement.textContent = state.guestStartedAt
     ? new Date(state.guestStartedAt).toLocaleString()
     : "Not started";
@@ -1299,7 +1331,7 @@ function createRecommendationCard(item) {
 
   const provider = document.createElement("p");
   provider.className = "resource-meta";
-  provider.textContent = `${item.provider} • ${item.format || "Format not stated"} • ${formatDuration(item.estimatedMinutes, item.durationNote)}`;
+  provider.textContent = `${item.provider} - ${item.format || "Format not stated"} - ${formatDuration(item.estimatedMinutes, item.durationNote)}`;
 
   const description = document.createElement("p");
   description.textContent = item.description;
@@ -1422,20 +1454,33 @@ async function init() {
     appData.appConfig = configuration.appConfig;
     appData.assessmentConfig = configuration.assessment;
     appData.recommendationConfig = configuration.recommendation;
+    appData.supabaseConfig = configuration.supabase;
     appData.catalog = catalog;
     appData.practiceCards = configuration.appliedPracticeCards;
     appData.milestones = configuration.milestones;
     appData.achievements = configuration.achievements;
 
-    renderAssessment(configuration.appConfig, configuration.assessment);
+    renderDynamicViews();
     renderPathStages(configuration.appConfig.learningPathStages);
-    renderPathProfileSummary();
-    renderCatalog(catalog, configuration.appliedPracticeCards);
-    renderProgressDashboard();
-    renderStorageState();
 
     const { state, recoverableError } = storageManager.getSnapshot();
     setView(state.activeView || "home");
+
+    initializeAccountMode({
+      config: configuration.supabase,
+      root: document.querySelector("#auth-root"),
+      milestones: configuration.milestones,
+      achievements: configuration.achievements,
+      createStorageManager,
+      getCurrentState: () => storageManager.getSnapshot().state,
+      onStorageManagerChanged: (nextStorageManager) => {
+        storageManager = nextStorageManager;
+      },
+      onStatus: setStatus,
+      onRender: renderDynamicViews
+    }).catch(() => {
+      setStatus("Account mode could not be initialized. Guest mode remains available.", true);
+    });
 
     if (recoverableError) {
       setStatus(recoverableError, true);

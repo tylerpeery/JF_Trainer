@@ -310,7 +310,7 @@ These examples illustrate matching logic and must not require users to disclose 
 - Frontend: plain HTML, responsive CSS, and plain JavaScript ES modules.
 - Build process: none.
 - Guest storage: browser `localStorage`.
-- Account storage: Supabase Free, deferred until Phase 5.
+- Account storage: Supabase Free account mode added in Phase 5, with guest-to-account transfer added in Phase 6.
 - Catalog: static JSON stored in the repository.
 - Recommendation approach: deterministic, rules-based, explainable scoring.
 
@@ -562,17 +562,21 @@ Guest/demo mode:
 - No account required.
 - Data stored in `localStorage`.
 - Clearly explain that data remains on that browser and device.
-- Provide reset and export functions in a later progress phase.
+- Provide reset and export functions.
 
 Account mode:
 
-- Supabase authentication, deferred until Phase 5.
+- Supabase authentication.
 - Progress available across devices.
 - Each user may access only their own profile, assessment, progress, and achievements.
 - Training catalog data may be publicly readable.
 - Use Row Level Security.
+- Browser code may use the Supabase project URL and browser-safe publishable key only.
+- App-managed account storage uses a hybrid model: one full JSONB state snapshot for app restore plus normalized reportable tables for profiles, assessment results, resource progress, completion feedback, milestone reflections, and earned achievements.
+- App-managed account state is stored by authenticated Supabase user ID and must not include rank, unit, mission, clearance, operational, medical, or other protected information.
+- Dashboard and reporting work may query normalized report tables in a later phase, but user-facing account access must remain limited to each user's own rows unless an explicit administrator/reporting model is approved.
 
-Guest-to-account transfer may be added after both storage modes are stable.
+Guest-to-account transfer imports guest assessment, progress, milestone reflections, and earned achievements into the signed-in account. Imported records must be deduplicated by stable IDs so repeated imports do not duplicate learning time, progress points, milestone credit, achievements, or report-table rows.
 
 ## Accessibility
 
@@ -600,9 +604,11 @@ The MVP must not collect or process sensitive information. It must warn users no
 
 The app should collect only the minimum information needed to recommend learning resources and track user-attested learning progress.
 
+For account mode, Supabase Auth may handle sign-in email for authentication. App-managed Pathfinder tables must store only authenticated user ID and normalized app state/reporting fields; they must not store email, rank, unit, mission, clearance, operational details, medical information, or other protected information.
+
 ## Current Implemented Scope
 
-Implemented through Phase 4:
+Implemented through Phase 6:
 
 - Static GitHub Pages-compatible app shell
 - Safety warning and guest/demo entry point
@@ -622,19 +628,23 @@ Implemented through Phase 4:
 - Derived learning time, progress points, milestones, and achievement displays
 - Optional five- and ten-hour milestone reflections
 - Guest data export and reset
+- Optional Supabase browser-client setup controlled by `data/supabase-config.json`
+- Magic-link authentication UI for configured Supabase projects
+- Hybrid account storage adapter for assessment, progress, feedback, achievements, and milestone reflections
+- Schema planning and Row Level Security SQL for per-user account state plus normalized report tables
+- Guest-to-account import with stable-ID deduplication
+- Accessible completion animation with reduced-motion fallback
+- Pilot-readiness checklist
 
 ## Deferred Features
 
-Deferred beyond the current Phase 4 scope:
+Deferred beyond the current MVP scope:
 
-- Supabase
-- Authentication
-- Guest-to-account transfer
-- Production catalog data
 - Enterprise or CAC authentication
 - Automated certificate verification
 - Live web scraping
 - Organization-level dashboards
+- Organization-level reporting roles or administrator access
 - Supervisor surveillance
 - LLM-generated recommendations
 - AI chatbots

@@ -5,6 +5,7 @@ import {
   mergeEarnedAchievements,
   normalizeCompletionInput
 } from "../progress.js";
+import { hasTransferableGuestState, mergeGuestStateIntoAccount } from "./guest-transfer.js";
 
 export function createStorageManager(adapter = createLocalStorageAdapter()) {
   let lastLoad = adapter.load();
@@ -217,6 +218,15 @@ export function createStorageManager(adapter = createLocalStorageAdapter()) {
     return lastLoad;
   }
 
+  function importGuestState(guestState, milestones = [], achievementDefinitions = []) {
+    lastLoad = adapter.update((state) => {
+      const mergedState = mergeGuestStateIntoAccount(state, guestState);
+      return awardCurrentAchievements(mergedState, milestones, achievementDefinitions);
+    });
+
+    return lastLoad;
+  }
+
   function resetGuestData() {
     lastLoad = adapter.reset();
     return lastLoad;
@@ -224,6 +234,14 @@ export function createStorageManager(adapter = createLocalStorageAdapter()) {
 
   function exportGuestData() {
     return adapter.exportJson();
+  }
+
+  async function flush() {
+    if (typeof adapter.flush === "function") {
+      await adapter.flush();
+    }
+
+    return getSnapshot();
   }
 
   return {
@@ -238,7 +256,10 @@ export function createStorageManager(adapter = createLocalStorageAdapter()) {
     undoResourceCompletion,
     saveResourceFeedback,
     saveMilestoneReflection,
+    importGuestState,
+    hasTransferableGuestState,
     resetGuestData,
-    exportGuestData
+    exportGuestData,
+    flush
   };
 }

@@ -201,6 +201,40 @@ select:focus-visible,
   margin: 0;
 }
 
+.completion-celebration {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 20;
+  max-width: min(24rem, calc(100% - 2rem));
+  border: 1px solid #99c8ad;
+  border-radius: var(--radius);
+  background: #e7f5ed;
+  color: #20533d;
+  box-shadow: var(--shadow-soft);
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  animation: completion-pop 1.8s ease-out both;
+}
+
+@keyframes completion-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.98);
+  }
+
+  15%,
+  75% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+
 .view-panel {
   margin-top: 1rem;
   padding: clamp(1rem, 3vw, 2rem);
@@ -267,6 +301,31 @@ select:focus-visible,
   background: #f3f7fb;
   padding: 1rem;
   border-radius: var(--radius);
+}
+
+.account-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.8fr);
+  gap: 1rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 1.5rem;
+}
+
+.account-panel h2 {
+  margin: 0;
+}
+
+.account-panel p {
+  color: var(--color-muted);
+}
+
+.auth-form,
+.auth-session {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #ffffff;
+  padding: 1rem;
 }
 
 .path-preview ol,
@@ -751,6 +810,7 @@ select:focus-visible,
   .path-item-grid,
   .progress-stats,
   .achievement-grid,
+  .account-panel,
   .state-summary {
     grid-template-columns: 1fr;
   }
@@ -776,8 +836,14 @@ select:focus-visible,
   }
 
   .primary-action,
-  .secondary-action {
+  .secondary-action,
+  .compact-action {
     width: 100%;
+  }
+
+  .progress-action-row {
+    align-items: stretch;
+    flex-direction: column;
   }
 }
 
@@ -789,5 +855,9 @@ select:focus-visible,
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .completion-celebration {
+    animation: none;
   }
 }

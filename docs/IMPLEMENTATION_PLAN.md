@@ -8,19 +8,17 @@
 - Phase 2: Complete, repaired against the Joint Force assessment requirements
 - Phase 3: Complete
 - Phase 4: Complete
-- Phase 5: Not started
-- Phase 6: Not started
-
-Phase 5 and later work must not begin without a separate instruction.
+- Phase 5: Complete
+- Phase 6: Complete
 
 ## Assumptions
 
 - The MVP remains a static GitHub Pages application with no build process.
 - `docs/PRODUCT_SPEC.md` controls product requirements.
 - `README.md` is public overview documentation and is not authoritative.
-- Supabase is deferred until Phase 5.
+- Supabase account mode is implemented in Phase 5.
 - Phase 3 catalog records are production training-resource records with verification notes.
-- Account mode and guest transfer are intentionally deferred.
+- Guest-to-account transfer is implemented after Phase 5 account mode.
 
 ## Phase 1: Static App Shell And Safety Baseline
 
@@ -152,7 +150,7 @@ Dependencies:
 
 ## Phase 5: Supabase Account Mode
 
-Status: Not started
+Status: Complete
 
 Scope:
 
@@ -161,6 +159,9 @@ Scope:
 - Add account storage adapter.
 - Add schema planning and Row Level Security SQL.
 - Save assessment, progress, feedback, achievements, and milestone reflections per authenticated user.
+- Use a hybrid account-storage model with a JSONB app-state snapshot plus normalized report tables for future dashboards and reports.
+- Keep guest mode available when Supabase is not configured.
+- Do not implement guest-to-account transfer.
 
 Acceptance criteria:
 
@@ -168,15 +169,19 @@ Acceptance criteria:
 - Guest mode still works without Supabase.
 - Browser code contains no service-role key or private secret.
 - Auth redirects work on GitHub Pages.
+- Account saves update both the app-state snapshot row and the normalized report tables.
+- Normalized report tables use Row Level Security policies scoped to `auth.uid() = user_id`.
+- `node --test` passes for account-storage, report-table, RLS, progress, recommendation, and assessment regression coverage.
 
 Dependencies:
 
 - Stable guest data model from Phase 4.
 - Supabase project configuration.
+- Supabase Auth redirect allow-list entries for local and GitHub Pages URLs.
 
 ## Phase 6: Guest Transfer, Polish, And Pilot Readiness
 
-Status: Not started
+Status: Complete
 
 Scope:
 
@@ -192,6 +197,7 @@ Acceptance criteria:
 - App meets WCAG 2.1 AA-oriented checks.
 - Guest and account flows pass manual pilot tests.
 - Deferred or known limitations are documented.
+- `node --test` passes for guest-transfer, account-storage, report-table, RLS, progress, recommendation, and assessment regression coverage.
 
 Dependencies:
 
@@ -199,12 +205,11 @@ Dependencies:
 
 ## Deferred Work
 
-The following are not part of Phase 4:
+The following are not part of the completed MVP:
 
-- Supabase implementation
-- Authentication
-- Guest-to-account transfer
 - Enterprise integrations
 - Organization dashboards
 - Automated certificate verification
 - LLM-generated recommendations
+- Organization-level reporting roles or administrator access
+- Production readiness, certification, authorization, or mission-readiness claims

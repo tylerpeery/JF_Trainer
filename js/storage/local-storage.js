@@ -2,18 +2,20 @@ const STORAGE_KEY = "ai-training-pathfinder:guest-state:v1";
 const CURRENT_VERSION = 1;
 export const SUPPORTED_ASSESSMENT_VERSION = "phase-2-joint-force-v2";
 
-function createDefaultState() {
+export function createDefaultState(overrides = {}) {
   return {
     version: CURRENT_VERSION,
     mode: "guest",
     activeView: "home",
     guestStartedAt: null,
+    account: null,
     assessment: null,
     progress: {
       resourceStates: {}
     },
     achievements: [],
-    updatedAt: null
+    updatedAt: null,
+    ...overrides
   };
 }
 
@@ -144,7 +146,7 @@ function normalizeAchievements(value) {
     }));
 }
 
-function normalizeState(value) {
+export function normalizeState(value) {
   const defaultState = createDefaultState();
 
   if (!isObject(value) || value.version !== CURRENT_VERSION) {
@@ -158,6 +160,8 @@ function normalizeState(value) {
     state: {
       ...defaultState,
       ...value,
+      mode: value.mode === "account" ? "account" : "guest",
+      account: isObject(value.account) ? value.account : null,
       assessment,
       progress: normalizeProgress(value.progress),
       achievements: normalizeAchievements(value.achievements)

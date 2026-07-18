@@ -16,13 +16,17 @@ This repository implements the AI Training Pathfinder MVP as a static GitHub Pag
 - `css/`: global responsive styles.
 - `js/`: ES modules for app shell, configuration, catalog loading, and storage.
 - `js/storage/`: storage interface and adapters.
+- `js/supabase-client.js` and `js/account-mode.js`: Supabase browser client setup and authentication UI.
 - `data/`: editable configuration, milestones, achievements, and catalog data.
 - `docs/`: authoritative product and implementation documentation.
+- `supabase/schema.sql`: Phase 5 hybrid account-mode schema and Row Level Security SQL.
+- `docs/PILOT_READINESS_CHECKLIST.md`: Phase 6 manual pilot verification checklist.
 
 ## Security And Data Handling
 
 - Never commit private credentials, secrets, Supabase service-role keys, or private API keys.
-- Browser code may only use browser-safe public credentials when Supabase is added in Phase 5.
+- Browser code may only use the Supabase project URL and browser-safe publishable key.
+- Supabase account storage uses one app-state snapshot row plus normalized report tables; keep all user-owned tables protected by Row Level Security.
 - Warn users not to enter classified, controlled, operationally sensitive, medical, personally identifiable, proprietary, credential, or other protected information.
 - Do not fabricate external training titles, providers, URLs, durations, certificates, free status, or verification evidence.
 - Placeholder catalog entries must be unmistakably labeled as unverified sample data.
@@ -51,4 +55,5 @@ Before declaring a task complete:
 - Confirm missing or corrupted app-owned `localStorage` does not crash the app.
 - Confirm no browser console errors appear in the normal approved flow.
 - Confirm no later-phase functionality was implemented unless separately requested.
+- For pilot-readiness changes, review `docs/PILOT_READINESS_CHECKLIST.md`.
 - Review the diff and update `docs/PRODUCT_SPEC.md` or `docs/IMPLEMENTATION_PLAN.md` when behavior, scope, phases, or acceptance criteria change.

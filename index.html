@@ -54,25 +54,24 @@
       <section class="view-panel" data-view-panel="home" aria-labelledby="home-title">
         <div class="intro-grid">
           <div class="intro-copy">
-            <p class="eyebrow">Phase 4 pathfinder</p>
+            <p class="eyebrow">Phase 6 pathfinder</p>
             <h2 id="home-title">Find a safer starting point for AI training.</h2>
             <p>
               This pilot shell will guide users toward free AI training based on their field,
               work patterns, practical AI fluency, technical orientation, goals, and available
-              time. Phase 4 adds guest progress, milestones, and achievements using local
-              browser storage.
+              time. Phase 6 adds guest-to-account transfer and pilot-readiness polish.
             </p>
             <div class="action-row">
               <button class="primary-action" type="button" data-start-guest>
                 Continue as guest
               </button>
               <button class="secondary-action" type="button" data-view-target="catalog">
-                View sample catalog
+                View training catalog
               </button>
             </div>
             <p class="helper-text">
-              Guest mode stores future progress only in this browser. Account sync is deferred
-              until Phase 5.
+              Guest mode stores progress only in this browser. Signed-in users can import
+              guest data into account storage when account mode is configured.
             </p>
           </div>
 
@@ -87,6 +86,18 @@
             </ol>
           </div>
         </div>
+
+        <section class="account-panel" aria-labelledby="account-title">
+          <div>
+            <p class="eyebrow">Optional account mode</p>
+            <h2 id="account-title">Save progress across devices</h2>
+            <p>
+              Sign in with Supabase when account mode is configured. App-managed account
+              records store assessment and progress state by authenticated user ID only.
+            </p>
+          </div>
+          <div id="auth-root"></div>
+        </section>
       </section>
 
       <section class="view-panel" data-view-panel="assessment" aria-labelledby="assessment-title" hidden>
@@ -128,11 +139,11 @@
 
       <section class="view-panel" data-view-panel="progress" aria-labelledby="progress-title" hidden>
         <div class="section-heading">
-          <p class="eyebrow">Guest progress</p>
+          <p class="eyebrow">Learning progress</p>
           <h2 id="progress-title">Progress</h2>
           <p>
-            Track started and completed learning activities in guest mode. Completion is
-            self-attested and milestones measure engagement only, not proficiency.
+            Track started and completed learning activities. Completion is self-attested
+            and milestones measure engagement only, not proficiency.
           </p>
         </div>
         <dl class="state-summary">
@@ -163,7 +174,7 @@
 
     <footer class="site-footer">
       <p>
-        Phase 4 guest-progress MVP. Milestones measure engagement only and do not represent
+        Phase 6 pilot-ready MVP. Milestones measure engagement only and do not represent
         certification, authorization, mission readiness, or validated job proficiency.
       </p>
     </footer>
