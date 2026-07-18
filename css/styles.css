@@ -550,6 +550,146 @@ select:focus-visible,
   font-size: 1rem;
 }
 
+.progress-controls {
+  margin-top: 1rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 0.85rem;
+}
+
+.progress-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+.compact-action {
+  min-height: 2.35rem;
+  padding: 0.45rem 0.7rem;
+}
+
+.compact-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.danger-action {
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.completion-details {
+  margin-top: 0.75rem;
+}
+
+.completion-details summary {
+  color: var(--color-primary);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.progress-field {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 0.75rem;
+  color: var(--color-muted);
+  font-weight: 700;
+}
+
+.progress-field input,
+.progress-field select,
+.progress-field textarea {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.6rem;
+  background: #ffffff;
+  color: var(--color-text);
+  font-weight: 400;
+}
+
+.progress-dashboard {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.progress-stats,
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.progress-stat,
+.progress-section,
+.achievement-badge,
+.reflection-form {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #ffffff;
+  padding: 1rem;
+}
+
+.progress-stat h3,
+.progress-section h3,
+.reflection-form h4 {
+  margin: 0 0 0.5rem;
+}
+
+.progress-stat strong {
+  display: block;
+  color: var(--color-primary-strong);
+  font-size: 1.45rem;
+}
+
+.milestone-list,
+.learning-history-list {
+  display: grid;
+  gap: 0.65rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.milestone-list li,
+.learning-history-list li {
+  display: grid;
+  gap: 0.2rem;
+  border-left: 4px solid var(--color-border);
+  padding: 0.65rem 0.75rem;
+  background: #f8fafc;
+}
+
+.milestone-list .milestone-earned {
+  border-left-color: var(--color-success);
+}
+
+.learning-history-list p {
+  margin: 0.25rem 0 0;
+  color: var(--color-muted);
+}
+
+.achievement-badge {
+  opacity: 0.68;
+}
+
+.achievement-badge.earned {
+  border-color: #99c8ad;
+  background: #e7f5ed;
+  opacity: 1;
+}
+
+.achievement-badge strong,
+.achievement-badge span {
+  display: block;
+}
+
+.achievement-badge p {
+  color: var(--color-muted);
+}
+
 .state-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -609,6 +749,8 @@ select:focus-visible,
   .assessment-results,
   .assessment-grid,
   .path-item-grid,
+  .progress-stats,
+  .achievement-grid,
   .state-summary {
     grid-template-columns: 1fr;
   }

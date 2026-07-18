@@ -6,7 +6,7 @@ Users will complete a short assessment, receive an explainable learning path, fo
 
 ## Project Status
 
-This project is implemented through Phase 3: Catalog, Config, and Recommendation Engine. Phase 3 includes the static application shell, safety warning, configuration data, storage foundation, Joint Force-oriented assessment flow, profile scoring with evidence explanations, validation, verified free-resource catalog records, deterministic recommendations, internal practice cards, tests, and profile-accuracy feedback.
+This project is implemented through Phase 4: Guest Progress, Milestones, and Achievements. Phase 4 includes the static application shell, safety warning, configuration data, Joint Force-oriented assessment flow, profile scoring with evidence explanations, verified free-resource catalog records, deterministic recommendations, internal practice cards, guest progress tracking, milestone displays, achievement displays, export, reset, tests, and profile-accuracy feedback.
 
 It is intended for a small pilot group of approximately 3 to 12 testers. It is not intended for large-scale deployment, enterprise use, official certification, or operational-readiness determinations.
 
@@ -44,7 +44,7 @@ The MVP uses:
 - Browser `localStorage` for guest mode
 - Supabase for optional authentication and globally saved progress, deferred until Phase 5
 - Static JSON configuration and catalog data
-- A deterministic, rules-based recommendation engine in a later phase
+- A deterministic, rules-based recommendation engine
 
 The MVP does not use React, Vite, TypeScript, a custom application server, or an LLM API.
 
@@ -77,13 +77,15 @@ ai-training-pathfinder/
 |   |-- assessment-validation.js
 |   |-- catalog.js
 |   |-- configuration.js
+|   |-- progress.js
 |   |-- recommendations.js
 |   `-- storage/
 |       |-- local-storage.js
 |       `-- storage-manager.js
 `-- tests/
     |-- phase2-assessment.test.js
-    `-- phase3-recommendations.test.js
+    |-- phase3-recommendations.test.js
+    `-- phase4-progress.test.js
 ```
 
 ## Running Locally
@@ -135,9 +137,9 @@ https://USERNAME.github.io/REPOSITORY-NAME/
 
 All internal file paths should remain relative so the application works correctly from a GitHub Pages repository subdirectory.
 
-## Current Phase 3 Behavior
+## Current Phase 4 Behavior
 
-Implemented through Phase 3:
+Implemented through Phase 4:
 
 - Responsive static app shell
 - Landing page
@@ -145,7 +147,7 @@ Implemented through Phase 3:
 - Pure assessment validation
 - Generated My Path view
 - Training Catalog view
-- Placeholder Progress view
+- Guest Progress view
 - Information-handling warning
 - Accessible guest/demo entry point
 - Configuration JSON
@@ -157,8 +159,12 @@ Implemented through Phase 3:
 - Deterministic recommendation scoring using editable JSON weights and thresholds
 - Five-stage recommended learning path
 - Internal fictional applied-practice cards
+- Start, complete, undo completion, optional completion date, optional takeaway, relevance, and difficulty feedback
+- Learning time, progress points, milestones, and professional achievements
+- Optional five- and ten-hour milestone reflections
+- Guest data export and reset
 
-Phase 3 does not include full progress tracking, achievements, Supabase, authentication, guest-to-account transfer, or production completion attestation.
+Phase 4 does not include Supabase, authentication, guest-to-account transfer, organization dashboards, automated certificate verification, or account sync.
 
 ## Training Catalog
 
@@ -180,7 +186,7 @@ Users should not enter:
 - Proprietary organizational information
 - Account credentials or passwords
 
-The MVP should collect only the minimum information required to create recommendations and track learning progress. Phase 3 collects assessment selections and optional profile-accuracy feedback; progress tracking remains deferred.
+The MVP should collect only the minimum information required to create recommendations and track learning progress. Phase 4 stores guest assessment, progress, optional completion feedback, and optional milestone reflections in browser `localStorage` only.
 
 ## Accessibility
 

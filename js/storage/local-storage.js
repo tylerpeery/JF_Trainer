@@ -47,6 +47,103 @@ function normalizeAssessment(value) {
   };
 }
 
+function normalizeResourceState(value, fallbackId = "") {
+  if (!isObject(value)) {
+    return null;
+  }
+
+  const id = typeof value.id === "string" && value.id ? value.id : fallbackId;
+
+  if (!id) {
+    return null;
+  }
+
+  const status = value.status === "completed" ? "completed" : "started";
+
+  return {
+    id,
+    type: typeof value.type === "string" ? value.type : "resource",
+    title: typeof value.title === "string" ? value.title : "Untitled resource",
+    provider: typeof value.provider === "string" ? value.provider : "Unknown provider",
+    pathStage: typeof value.pathStage === "string" ? value.pathStage : "",
+    estimatedMinutes: typeof value.estimatedMinutes === "number" ? value.estimatedMinutes : null,
+    durationStatus: typeof value.durationStatus === "string" ? value.durationStatus : "needs-manual-verification",
+    durationNote: typeof value.durationNote === "string" ? value.durationNote : "",
+    format: typeof value.format === "string" ? value.format : "",
+    sourceUrl: typeof value.sourceUrl === "string" ? value.sourceUrl : "",
+    workPatterns: Array.isArray(value.workPatterns) ? value.workPatterns : [],
+    learningGoals: Array.isArray(value.learningGoals) ? value.learningGoals : [],
+    professionalFields: Array.isArray(value.professionalFields) ? value.professionalFields : [],
+    tags: Array.isArray(value.tags) ? value.tags : [],
+    status,
+    startedAt: typeof value.startedAt === "string" ? value.startedAt : null,
+    completedAt: status === "completed" && typeof value.completedAt === "string" ? value.completedAt : null,
+    completionDate: typeof value.completionDate === "string" ? value.completionDate : "",
+    takeaway: typeof value.takeaway === "string" ? value.takeaway : "",
+    relevance: typeof value.relevance === "string" ? value.relevance : "",
+    difficulty: typeof value.difficulty === "string" ? value.difficulty : "",
+    updatedAt: typeof value.updatedAt === "string" ? value.updatedAt : null
+  };
+}
+
+function normalizeProgress(value) {
+  if (!isObject(value)) {
+    return createDefaultState().progress;
+  }
+
+  const resourceStates = Object.fromEntries(
+    Object.entries(isObject(value.resourceStates) ? value.resourceStates : {})
+      .map(([id, record]) => [id, normalizeResourceState(record, id)])
+      .filter(([id, record]) => record && id === record.id)
+  );
+
+  const milestoneReflections = Object.fromEntries(
+    Object.entries(isObject(value.milestoneReflections) ? value.milestoneReflections : {})
+      .filter(([id, reflection]) => typeof id === "string" && isObject(reflection))
+      .map(([id, reflection]) => [
+        id,
+        {
+          usingAiMore: typeof reflection.usingAiMore === "string" ? reflection.usingAiMore : "",
+          evaluatingOutputConfidence: typeof reflection.evaluatingOutputConfidence === "string"
+            ? reflection.evaluatingOutputConfidence
+            : "",
+          nonsensitiveExample: typeof reflection.nonsensitiveExample === "string"
+            ? reflection.nonsensitiveExample
+            : "",
+          updatedAt: typeof reflection.updatedAt === "string" ? reflection.updatedAt : null
+        }
+      ])
+  );
+
+  return {
+    resourceStates,
+    milestoneReflections
+  };
+}
+
+function normalizeAchievements(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const seen = new Set();
+
+  return value
+    .filter((achievement) => isObject(achievement) && typeof achievement.id === "string" && achievement.id)
+    .filter((achievement) => {
+      if (seen.has(achievement.id)) {
+        return false;
+      }
+
+      seen.add(achievement.id);
+      return true;
+    })
+    .map((achievement) => ({
+      id: achievement.id,
+      earnedAt: typeof achievement.earnedAt === "string" ? achievement.earnedAt : null
+    }));
+}
+
 function normalizeState(value) {
   const defaultState = createDefaultState();
 
@@ -62,11 +159,8 @@ function normalizeState(value) {
       ...defaultState,
       ...value,
       assessment,
-      progress: {
-        ...defaultState.progress,
-        ...(isObject(value.progress) ? value.progress : {})
-      },
-      achievements: Array.isArray(value.achievements) ? value.achievements : []
+      progress: normalizeProgress(value.progress),
+      achievements: normalizeAchievements(value.achievements)
     },
     discardedAssessment
   };

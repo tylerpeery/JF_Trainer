@@ -602,7 +602,7 @@ The app should collect only the minimum information needed to recommend learning
 
 ## Current Implemented Scope
 
-Implemented through Phase 3:
+Implemented through Phase 4:
 
 - Static GitHub Pages-compatible app shell
 - Safety warning and guest/demo entry point
@@ -617,13 +617,16 @@ Implemented through Phase 3:
 - Five-stage learning path generation
 - Plain-language recommendation explanations
 - Internal applied-practice cards using fictional, nonsensitive scenarios
+- Guest progress tracking in browser `localStorage`
+- Start, complete, undo completion, optional completion date, optional takeaway, relevance, and difficulty feedback controls
+- Derived learning time, progress points, milestones, and achievement displays
+- Optional five- and ten-hour milestone reflections
+- Guest data export and reset
 
 ## Deferred Features
 
-Deferred beyond the current Phase 3 scope:
+Deferred beyond the current Phase 4 scope:
 
-- Full progress tracking
-- Achievement calculation
 - Supabase
 - Authentication
 - Guest-to-account transfer

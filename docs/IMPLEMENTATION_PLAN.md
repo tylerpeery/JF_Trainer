@@ -7,11 +7,11 @@
 - Phase 1: Complete
 - Phase 2: Complete, repaired against the Joint Force assessment requirements
 - Phase 3: Complete
-- Phase 4: Not started
+- Phase 4: Complete
 - Phase 5: Not started
 - Phase 6: Not started
 
-Phase 4 and later work must not begin without a separate instruction.
+Phase 5 and later work must not begin without a separate instruction.
 
 ## Assumptions
 
@@ -20,7 +20,7 @@ Phase 4 and later work must not begin without a separate instruction.
 - `README.md` is public overview documentation and is not authoritative.
 - Supabase is deferred until Phase 5.
 - Phase 3 catalog records are production training-resource records with verification notes.
-- Account mode, guest transfer, and full progress features are intentionally deferred.
+- Account mode and guest transfer are intentionally deferred.
 
 ## Phase 1: Static App Shell And Safety Baseline
 
@@ -128,7 +128,7 @@ Dependencies:
 
 ## Phase 4: Guest Progress, Milestones, And Achievements
 
-Status: Not started
+Status: Complete
 
 Scope:
 
@@ -136,6 +136,7 @@ Scope:
 - Add start, complete, undo completion, optional completion date, optional takeaway, feedback, export, and reset.
 - Add milestone, progress-point, badge, and achievement displays.
 - Prevent duplicate credit when completion status is toggled.
+- Keep milestone reflection prompts optional and limited to nonsensitive information.
 
 Acceptance criteria:
 
@@ -143,6 +144,7 @@ Acceptance criteria:
 - Milestones do not promote expertise level.
 - Five- and ten-hour reflections are optional.
 - Export and reset work for guest mode.
+- `node --test` passes for progress, milestone, achievement, recommendation, and assessment regression coverage.
 
 Dependencies:
 
@@ -197,14 +199,11 @@ Dependencies:
 
 ## Deferred Work
 
-The following are not part of Phase 3:
+The following are not part of Phase 4:
 
-- Full progress tracking
-- Achievement calculation
 - Supabase implementation
 - Authentication
 - Guest-to-account transfer
-- Production training-resource data
 - Enterprise integrations
 - Organization dashboards
 - Automated certificate verification

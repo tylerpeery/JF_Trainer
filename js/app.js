@@ -2,6 +2,7 @@ import { loadCatalog } from "./catalog.js";
 import { loadConfiguration } from "./configuration.js";
 import { calculateProfile } from "./assessment.js";
 import { validateAssessmentAnswers } from "./assessment-validation.js";
+import { buildProgressSummary } from "./progress.js";
 import { buildLearningPath } from "./recommendations.js";
 import { createStorageManager } from "./storage/storage-manager.js";
 
@@ -16,7 +17,9 @@ const appData = {
   assessmentConfig: null,
   recommendationConfig: null,
   catalog: [],
-  practiceCards: []
+  practiceCards: [],
+  milestones: [],
+  achievements: []
 };
 
 function setStatus(message, isError = false) {
@@ -99,6 +102,230 @@ function formatDuration(minutes, note = "") {
   }
 
   return `${hours} hr ${remainingMinutes} min`;
+}
+
+function formatHours(minutes) {
+  return `${(minutes / 60).toFixed(1)} hr`;
+}
+
+function allTrackableItems() {
+  return [
+    ...appData.catalog.map((item) => ({ ...item, type: "resource" })),
+    ...appData.practiceCards.map((item) => ({ ...item, type: "practice" }))
+  ];
+}
+
+function findTrackableItem(resourceId) {
+  return allTrackableItems().find((item) => item.id === resourceId) || null;
+}
+
+function progressRecordFor(resourceId) {
+  return storageManager.getSnapshot().state.progress.resourceStates[resourceId] || null;
+}
+
+function progressSummary() {
+  return buildProgressSummary(
+    storageManager.getSnapshot().state,
+    appData.milestones,
+    appData.achievements
+  );
+}
+
+function isTrackable(item) {
+  return item.active !== false && !item.sampleData;
+}
+
+function createTextInput({ id, label, value = "", type = "text", placeholder = "" }) {
+  const wrapper = document.createElement("label");
+  wrapper.className = "progress-field";
+  wrapper.setAttribute("for", id);
+
+  const labelText = document.createElement("span");
+  labelText.textContent = label;
+  const input = document.createElement("input");
+  input.id = id;
+  input.type = type;
+  input.value = value || "";
+  input.placeholder = placeholder;
+
+  wrapper.append(labelText, input);
+  return { wrapper, input };
+}
+
+function createSelectInput({ id, label, value = "", options }) {
+  const wrapper = document.createElement("label");
+  wrapper.className = "progress-field";
+  wrapper.setAttribute("for", id);
+
+  const labelText = document.createElement("span");
+  labelText.textContent = label;
+  const select = document.createElement("select");
+  select.id = id;
+
+  options.forEach((option) => {
+    const optionElement = document.createElement("option");
+    optionElement.value = option.value;
+    optionElement.textContent = option.label;
+    select.append(optionElement);
+  });
+
+  select.value = value || "";
+  wrapper.append(labelText, select);
+  return { wrapper, input: select };
+}
+
+function createTakeawayInput(id, value = "") {
+  const wrapper = document.createElement("label");
+  wrapper.className = "progress-field";
+  wrapper.setAttribute("for", id);
+
+  const labelText = document.createElement("span");
+  labelText.textContent = "Optional takeaway";
+  const textarea = document.createElement("textarea");
+  textarea.id = id;
+  textarea.rows = 3;
+  textarea.maxLength = 500;
+  textarea.value = value || "";
+  textarea.placeholder = "Use only nonsensitive notes.";
+
+  wrapper.append(labelText, textarea);
+  return { wrapper, input: textarea };
+}
+
+function refreshProgressViews() {
+  renderStorageState();
+  renderProgressDashboard();
+  renderPathProfileSummary();
+  renderCatalog(appData.catalog, appData.practiceCards);
+}
+
+function createProgressControls(resourceId) {
+  const item = findTrackableItem(resourceId);
+  const wrapper = document.createElement("div");
+  wrapper.className = "progress-controls";
+
+  if (!item || !isTrackable(item)) {
+    return wrapper;
+  }
+
+  const record = progressRecordFor(resourceId);
+  const status = document.createElement("p");
+  status.className = "selection-note";
+  status.setAttribute("aria-live", "polite");
+  status.textContent = record?.status === "completed"
+    ? `Completed${record.completionDate ? ` on ${record.completionDate}` : ""}.`
+    : record?.status === "started"
+      ? "Started. Completion is recorded by your attestation."
+      : "Not started.";
+
+  const actions = document.createElement("div");
+  actions.className = "progress-action-row";
+
+  const startButton = document.createElement("button");
+  startButton.type = "button";
+  startButton.className = "secondary-action compact-action";
+  startButton.textContent = record ? "Started" : "Start";
+  startButton.disabled = Boolean(record);
+  startButton.addEventListener("click", () => {
+    const { recoverableError } = storageManager.startResource(item, item.type);
+    setStatus(recoverableError || "Resource started.", Boolean(recoverableError));
+    refreshProgressViews();
+  });
+
+  actions.append(startButton);
+
+  const details = document.createElement("details");
+  details.className = "completion-details";
+  details.open = record?.status === "completed";
+
+  const summary = document.createElement("summary");
+  summary.textContent = record?.status === "completed" ? "Completion notes and feedback" : "Mark complete";
+
+  const completionDate = createTextInput({
+    id: `${resourceId}-completion-date`,
+    label: "Optional completion date",
+    type: "date",
+    value: record?.completionDate || ""
+  });
+  const takeaway = createTakeawayInput(`${resourceId}-takeaway`, record?.takeaway || "");
+  const relevance = createSelectInput({
+    id: `${resourceId}-relevance`,
+    label: "Optional relevance",
+    value: record?.relevance || "",
+    options: [
+      { value: "", label: "Not rated" },
+      { value: "1", label: "1 - Low relevance" },
+      { value: "2", label: "2" },
+      { value: "3", label: "3" },
+      { value: "4", label: "4" },
+      { value: "5", label: "5 - High relevance" }
+    ]
+  });
+  const difficulty = createSelectInput({
+    id: `${resourceId}-difficulty`,
+    label: "Optional difficulty",
+    value: record?.difficulty || "",
+    options: [
+      { value: "", label: "Not rated" },
+      { value: "too-easy", label: "Too easy" },
+      { value: "appropriate", label: "Appropriate" },
+      { value: "too-difficult", label: "Too difficult" }
+    ]
+  });
+
+  const note = document.createElement("p");
+  note.className = "handling-reminder";
+  note.textContent = "Use only nonsensitive notes. Do not enter protected, operational, medical, personal, or proprietary information.";
+
+  const completeButton = document.createElement("button");
+  completeButton.type = "button";
+  completeButton.className = "primary-action compact-action";
+  completeButton.textContent = record?.status === "completed" ? "Save feedback" : "Mark complete";
+  completeButton.addEventListener("click", () => {
+    const input = {
+      completionDate: completionDate.input.value,
+      takeaway: takeaway.input.value,
+      relevance: relevance.input.value,
+      difficulty: difficulty.input.value
+    };
+    const result = record?.status === "completed"
+      ? storageManager.saveResourceFeedback(resourceId, input)
+      : storageManager.completeResource(item, item.type, input, appData.milestones, appData.achievements);
+
+    setStatus(
+      result.recoverableError || (record?.status === "completed" ? "Progress feedback saved." : "Completion recorded."),
+      Boolean(result.recoverableError)
+    );
+    refreshProgressViews();
+  });
+
+  const undoButton = document.createElement("button");
+  undoButton.type = "button";
+  undoButton.className = "secondary-action compact-action";
+  undoButton.textContent = "Undo completion";
+  undoButton.hidden = record?.status !== "completed";
+  undoButton.addEventListener("click", () => {
+    const result = storageManager.undoResourceCompletion(resourceId, appData.milestones, appData.achievements);
+    setStatus(result.recoverableError || "Completion undone. Time and points were recalculated.", Boolean(result.recoverableError));
+    refreshProgressViews();
+  });
+
+  const completionActions = document.createElement("div");
+  completionActions.className = "progress-action-row";
+  completionActions.append(completeButton, undoButton);
+
+  details.append(
+    summary,
+    completionDate.wrapper,
+    takeaway.wrapper,
+    relevance.wrapper,
+    difficulty.wrapper,
+    note,
+    completionActions
+  );
+
+  wrapper.append(status, actions, details);
+  return wrapper;
 }
 
 function createOptionInput({ type, name, value, label, description = "", checked = false }) {
@@ -606,6 +833,7 @@ function renderAssessment(appConfig, assessmentConfig) {
     errorBox.hidden = true;
     const result = calculateProfile(answers, assessmentConfig, appConfig);
     const { recoverableError } = storageManager.saveAssessmentResult(result);
+    storageManager.refreshAchievements(appData.milestones, appData.achievements);
     renderAssessmentResult(result, assessmentConfig.accuracyOptions);
     setStatus(
       recoverableError || "Assessment complete. Your profile dimensions are shown below.",
@@ -695,6 +923,8 @@ function createCatalogCard(resource) {
     card.append(link);
   }
 
+  card.append(createProgressControls(resource.id));
+
   return card;
 }
 
@@ -714,12 +944,296 @@ function renderCatalog(catalog, practiceCards) {
   container.replaceChildren(...cards);
 }
 
+function renderProgressDashboard() {
+  const container = document.querySelector("#progress-root");
+
+  if (!container) {
+    return;
+  }
+
+  const { state } = storageManager.getSnapshot();
+  const summary = progressSummary();
+  const dashboard = document.createElement("div");
+  dashboard.className = "progress-dashboard";
+
+  const stats = document.createElement("div");
+  stats.className = "progress-stats";
+  [
+    ["Started", summary.startedCount],
+    ["Completed", summary.completedCount],
+    ["Learning time", formatHours(summary.totalMinutes)],
+    ["Progress points", summary.progressPoints]
+  ].forEach(([label, value]) => {
+    const card = document.createElement("article");
+    card.className = "progress-stat";
+    const heading = document.createElement("h3");
+    heading.textContent = label;
+    const strong = document.createElement("strong");
+    strong.textContent = String(value);
+    card.append(heading, strong);
+    stats.append(card);
+  });
+
+  const milestoneSection = document.createElement("section");
+  milestoneSection.className = "progress-section";
+  milestoneSection.setAttribute("aria-labelledby", "milestone-title");
+  const milestoneHeading = document.createElement("h3");
+  milestoneHeading.id = "milestone-title";
+  milestoneHeading.textContent = "Milestones";
+  const milestoneDisclaimer = document.createElement("p");
+  milestoneDisclaimer.className = "selection-note";
+  milestoneDisclaimer.textContent = "Milestones measure learning engagement only. They do not certify proficiency, authorization, readiness, or expertise.";
+  const milestoneList = document.createElement("ol");
+  milestoneList.className = "milestone-list";
+
+  summary.milestones.forEach((milestone) => {
+    const item = document.createElement("li");
+    item.className = milestone.earned ? "milestone-earned" : "milestone-pending";
+    const name = document.createElement("strong");
+    name.textContent = milestone.name;
+    const details = document.createElement("span");
+    details.textContent = `${milestone.requiredHours} hr - ${milestone.description}`;
+    item.append(name, details);
+    milestoneList.append(item);
+  });
+
+  milestoneSection.append(milestoneHeading, milestoneDisclaimer, milestoneList);
+
+  const achievementSection = document.createElement("section");
+  achievementSection.className = "progress-section";
+  achievementSection.setAttribute("aria-labelledby", "achievement-title");
+  const achievementHeading = document.createElement("h3");
+  achievementHeading.id = "achievement-title";
+  achievementHeading.textContent = "Achievement cabinet";
+  const achievementGrid = document.createElement("div");
+  achievementGrid.className = "achievement-grid";
+
+  summary.achievements.forEach((achievement) => {
+    const badge = document.createElement("article");
+    badge.className = achievement.earned ? "achievement-badge earned" : "achievement-badge";
+    const label = document.createElement("strong");
+    label.textContent = achievement.name;
+    const description = document.createElement("p");
+    description.textContent = achievement.description;
+    const status = document.createElement("span");
+    status.textContent = achievement.earned ? "Earned" : "Not yet earned";
+    badge.append(label, description, status);
+    achievementGrid.append(badge);
+  });
+
+  achievementSection.append(achievementHeading, achievementGrid);
+
+  const historySection = createLearningHistorySection(state);
+  const reflectionSection = createMilestoneReflectionSection(state, summary);
+  const actions = createGuestDataActions();
+
+  dashboard.append(stats, milestoneSection, achievementSection, historySection, reflectionSection, actions);
+  container.replaceChildren(dashboard);
+}
+
+function createLearningHistorySection(state) {
+  const section = document.createElement("section");
+  section.className = "progress-section";
+  section.setAttribute("aria-labelledby", "history-title");
+
+  const heading = document.createElement("h3");
+  heading.id = "history-title";
+  heading.textContent = "Learning history";
+
+  const records = Object.values(state.progress.resourceStates || {})
+    .sort((a, b) => String(b.updatedAt || "").localeCompare(String(a.updatedAt || "")));
+
+  section.append(heading);
+
+  if (records.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "selection-note";
+    empty.textContent = "Start or complete a recommended resource to build your guest learning history.";
+    section.append(empty);
+    return section;
+  }
+
+  const list = document.createElement("ol");
+  list.className = "learning-history-list";
+
+  records.forEach((record) => {
+    const item = document.createElement("li");
+    const title = document.createElement("strong");
+    title.textContent = record.title;
+    const details = document.createElement("span");
+    details.textContent = [
+      record.status === "completed" ? "Completed" : "Started",
+      record.provider,
+      record.pathStage,
+      formatDuration(record.estimatedMinutes, record.durationNote)
+    ].filter(Boolean).join(" - ");
+    item.append(title, details);
+
+    if (record.takeaway) {
+      const takeaway = document.createElement("p");
+      takeaway.textContent = `Takeaway: ${record.takeaway}`;
+      item.append(takeaway);
+    }
+
+    list.append(item);
+  });
+
+  section.append(list);
+  return section;
+}
+
+function createMilestoneReflectionSection(state, summary) {
+  const section = document.createElement("section");
+  section.className = "progress-section";
+  section.setAttribute("aria-labelledby", "reflection-title");
+
+  const heading = document.createElement("h3");
+  heading.id = "reflection-title";
+  heading.textContent = "Optional milestone reflections";
+
+  const description = document.createElement("p");
+  description.className = "selection-note";
+  description.textContent = "Five- and ten-hour reflections are optional. Use only fictional, generalized, or nonsensitive examples.";
+
+  section.append(heading, description);
+
+  const eligibleMilestones = summary.milestones.filter((milestone) => {
+    return milestone.earned && (milestone.id === "adoption-momentum" || milestone.id === "applied-foundation");
+  });
+
+  if (eligibleMilestones.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "selection-note";
+    empty.textContent = "Reflection prompts appear after the five- and ten-hour engagement milestones.";
+    section.append(empty);
+    return section;
+  }
+
+  eligibleMilestones.forEach((milestone) => {
+    const saved = state.progress.milestoneReflections?.[milestone.id] || {};
+    const form = document.createElement("form");
+    form.className = "reflection-form";
+
+    const title = document.createElement("h4");
+    title.textContent = milestone.name;
+
+    const usingAiMore = createSelectInput({
+      id: `${milestone.id}-using-ai-more`,
+      label: "Are you using AI more frequently?",
+      value: saved.usingAiMore || "",
+      options: [
+        { value: "", label: "No response" },
+        { value: "yes", label: "Yes" },
+        { value: "no", label: "No" },
+        { value: "not-sure", label: "Not sure" }
+      ]
+    });
+    const confidence = createSelectInput({
+      id: `${milestone.id}-confidence`,
+      label: "Are you more confident evaluating AI output?",
+      value: saved.evaluatingOutputConfidence || "",
+      options: [
+        { value: "", label: "No response" },
+        { value: "yes", label: "Yes" },
+        { value: "no", label: "No" },
+        { value: "not-sure", label: "Not sure" }
+      ]
+    });
+    const example = createTakeawayInput(`${milestone.id}-example`, saved.nonsensitiveExample || "");
+    example.wrapper.querySelector("span").textContent = "Optional nonsensitive example";
+
+    const save = document.createElement("button");
+    save.type = "submit";
+    save.className = "secondary-action compact-action";
+    save.textContent = "Save reflection";
+    const savedText = document.createElement("span");
+    savedText.className = "selection-note";
+    savedText.setAttribute("aria-live", "polite");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const result = storageManager.saveMilestoneReflection(milestone.id, {
+        usingAiMore: usingAiMore.input.value,
+        evaluatingOutputConfidence: confidence.input.value,
+        nonsensitiveExample: example.input.value
+      });
+      savedText.textContent = result.recoverableError || "Reflection saved.";
+      renderStorageState();
+    });
+
+    const row = document.createElement("div");
+    row.className = "progress-action-row";
+    row.append(save, savedText);
+
+    form.append(title, usingAiMore.wrapper, confidence.wrapper, example.wrapper, row);
+    section.append(form);
+  });
+
+  return section;
+}
+
+function createGuestDataActions() {
+  const section = document.createElement("section");
+  section.className = "progress-section";
+  section.setAttribute("aria-labelledby", "guest-data-title");
+
+  const heading = document.createElement("h3");
+  heading.id = "guest-data-title";
+  heading.textContent = "Guest data";
+
+  const description = document.createElement("p");
+  description.className = "selection-note";
+  description.textContent = "Guest data is stored only in this browser. Export before resetting if you want a local record.";
+
+  const actions = document.createElement("div");
+  actions.className = "progress-action-row";
+
+  const exportButton = document.createElement("button");
+  exportButton.type = "button";
+  exportButton.className = "secondary-action compact-action";
+  exportButton.textContent = "Export guest data";
+  exportButton.addEventListener("click", () => {
+    const blob = new Blob([storageManager.exportGuestData()], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "ai-training-pathfinder-guest-data.json";
+    link.click();
+    URL.revokeObjectURL(link.href);
+    setStatus("Guest data export prepared by your browser.", false);
+  });
+
+  const resetButton = document.createElement("button");
+  resetButton.type = "button";
+  resetButton.className = "secondary-action compact-action danger-action";
+  resetButton.textContent = "Reset guest data";
+  resetButton.addEventListener("click", () => {
+    const confirmed = globalThis.confirm(
+      "Reset all guest assessment, progress, reflection, and achievement data stored in this browser?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const result = storageManager.resetGuestData();
+    setStatus(result.recoverableError || "Guest data reset.", Boolean(result.recoverableError));
+    refreshProgressViews();
+    setView("home", { focusMain: true });
+  });
+
+  actions.append(exportButton, resetButton);
+  section.append(heading, description, actions);
+  return section;
+}
+
 function renderStorageState() {
   const { state, recoverableError } = storageManager.getSnapshot();
   const startedElement = document.querySelector("#guest-started");
   const modeElement = document.querySelector("#storage-mode");
   const healthElement = document.querySelector("#storage-health");
   const assessmentStatusElement = document.querySelector("#assessment-storage-status");
+  const progressStatusElement = document.querySelector("#progress-storage-status");
+  const summary = progressSummary();
 
   modeElement.textContent = state.mode === "guest" ? "Guest" : state.mode;
   startedElement.textContent = state.guestStartedAt
@@ -729,6 +1243,9 @@ function renderStorageState() {
   assessmentStatusElement.textContent = state.assessment
     ? `Completed ${new Date(state.assessment.completedAt).toLocaleDateString()}`
     : "Not completed";
+  if (progressStatusElement) {
+    progressStatusElement.textContent = `${summary.completedCount} completed, ${formatHours(summary.totalMinutes)} recorded`;
+  }
 
   if (recoverableError) {
     setStatus(recoverableError, true);
@@ -825,6 +1342,8 @@ function createRecommendationCard(item) {
     card.append(link);
   }
 
+  card.append(createProgressControls(item.id));
+
   return card;
 }
 
@@ -905,11 +1424,14 @@ async function init() {
     appData.recommendationConfig = configuration.recommendation;
     appData.catalog = catalog;
     appData.practiceCards = configuration.appliedPracticeCards;
+    appData.milestones = configuration.milestones;
+    appData.achievements = configuration.achievements;
 
     renderAssessment(configuration.appConfig, configuration.assessment);
     renderPathStages(configuration.appConfig.learningPathStages);
     renderPathProfileSummary();
     renderCatalog(catalog, configuration.appliedPracticeCards);
+    renderProgressDashboard();
     renderStorageState();
 
     const { state, recoverableError } = storageManager.getSnapshot();

@@ -54,13 +54,13 @@
       <section class="view-panel" data-view-panel="home" aria-labelledby="home-title">
         <div class="intro-grid">
           <div class="intro-copy">
-            <p class="eyebrow">Phase 3 pathfinder</p>
+            <p class="eyebrow">Phase 4 pathfinder</p>
             <h2 id="home-title">Find a safer starting point for AI training.</h2>
             <p>
               This pilot shell will guide users toward free AI training based on their field,
               work patterns, practical AI fluency, technical orientation, goals, and available
-              time. Phase 3 adds deterministic recommendations using verified resources and
-              fictional practice cards.
+              time. Phase 4 adds guest progress, milestones, and achievements using local
+              browser storage.
             </p>
             <div class="action-row">
               <button class="primary-action" type="button" data-start-guest>
@@ -128,11 +128,11 @@
 
       <section class="view-panel" data-view-panel="progress" aria-labelledby="progress-title" hidden>
         <div class="section-heading">
-          <p class="eyebrow">Placeholder</p>
+          <p class="eyebrow">Guest progress</p>
           <h2 id="progress-title">Progress</h2>
           <p>
-            Full progress tracking, milestones, completion attestation, and achievements are
-            deferred until Phase 4. The storage foundation is active now.
+            Track started and completed learning activities in guest mode. Completion is
+            self-attested and milestones measure engagement only, not proficiency.
           </p>
         </div>
         <dl class="state-summary">
@@ -152,13 +152,18 @@
             <dt>Assessment status</dt>
             <dd id="assessment-storage-status">Not completed</dd>
           </div>
+          <div>
+            <dt>Progress status</dt>
+            <dd id="progress-storage-status">No progress recorded</dd>
+          </div>
         </dl>
+        <div id="progress-root"></div>
       </section>
     </main>
 
     <footer class="site-footer">
       <p>
-        Phase 3 recommendation MVP. Milestones measure engagement only and do not represent
+        Phase 4 guest-progress MVP. Milestones measure engagement only and do not represent
         certification, authorization, mission readiness, or validated job proficiency.
       </p>
     </footer>
