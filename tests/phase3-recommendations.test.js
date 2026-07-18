@@ -11,6 +11,31 @@ const appConfig = await readJson("../data/app-config.json");
 const catalog = await readJson("../data/training-resources.json");
 const practiceCards = await readJson("../data/applied-practice-cards.json");
 const recommendationConfig = await readJson("../data/recommendation-config.json");
+const allowedDurationStatuses = new Set([
+  "verified",
+  "verified-official",
+  "verified-official-approximate",
+  "verified-official-sum",
+  "verified-official-variable",
+  "needs-manual-verification"
+]);
+const expectedDurationMinutes = new Map([
+  ["elements-introduction-to-ai", 1800],
+  ["microsoft-learn-what-generative-ai", 30],
+  ["microsoft-learn-generative-ai-agents", 37],
+  ["microsoft-learn-use-ai-everyday-tasks", 43],
+  ["microsoft-learn-explore-responsible-ai", 34],
+  ["microsoft-learn-embrace-responsible-ai", 51],
+  ["microsoft-learn-generative-ai-for-trainers", 156],
+  ["microsoft-learn-responsible-ai-education", 162],
+  ["microsoft-learn-ai-for-educators", 267],
+  ["microsoft-learn-transform-business-ai", 154],
+  ["microsoft-learn-healthcare-leaders-ai", 187],
+  ["google-introduction-machine-learning", 20],
+  ["google-ml-crash-course", 810],
+  ["elements-building-ai", null],
+  ["nist-ai-rmf-playbook", null]
+]);
 
 function assessment(overrides = {}) {
   return {
@@ -66,8 +91,9 @@ test("production catalog contains 12 to 15 verified active external resources", 
     assert.equal(resource.lastVerifiedAt, "2026-07-18", resource.id);
     assert.equal(resource.lastVerificationDate, "2026-07-18", resource.id);
     assert.match(resource.freeStatusVerification, /Verified/i, resource.id);
-    assert.ok(["verified", "needs-manual-verification"].includes(resource.durationStatus), resource.id);
+    assert.ok(allowedDurationStatuses.has(resource.durationStatus), resource.id);
     assert.equal(resource.durationMinutes, resource.estimatedMinutes, resource.id);
+    assert.equal(resource.durationMinutes, expectedDurationMinutes.get(resource.id), resource.id);
     assert.notEqual(resource.verificationStatus, "manual-review", resource.id);
     assert.ok(appConfig.learningPathStages.includes(resource.pathStage), resource.id);
   });
