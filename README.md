@@ -6,7 +6,7 @@ Users will complete a short assessment, receive an explainable learning path, fo
 
 ## Project Status
 
-This project is implemented through the repaired Phase 2: Assessment and Profile Scoring. Phase 2 includes the static application shell, safety warning, configuration data, sample-only catalog records, storage foundation, Joint Force-oriented assessment flow, profile scoring with evidence explanations, validation, tests, and profile-accuracy feedback.
+This project is implemented through Phase 3: Catalog, Config, and Recommendation Engine. Phase 3 includes the static application shell, safety warning, configuration data, storage foundation, Joint Force-oriented assessment flow, profile scoring with evidence explanations, validation, verified free-resource catalog records, deterministic recommendations, internal practice cards, tests, and profile-accuracy feedback.
 
 It is intended for a small pilot group of approximately 3 to 12 testers. It is not intended for large-scale deployment, enterprise use, official certification, or operational-readiness determinations.
 
@@ -24,7 +24,7 @@ Authoritative documentation:
 - Separate practical AI fluency and technical-orientation profiles
 - Role- and work-pattern-based training recommendations
 - Explainable recommendation logic
-- Curated catalog of free external AI training
+- Curated catalog of verified free external AI training
 - Guest mode using browser storage
 - Optional user accounts with globally saved progress
 - Training completion tracking
@@ -62,8 +62,10 @@ ai-training-pathfinder/
 |-- data/
 |   |-- achievements.json
 |   |-- app-config.json
+|   |-- applied-practice-cards.json
 |   |-- assessment-questions.json
 |   |-- milestones.json
+|   |-- recommendation-config.json
 |   `-- training-resources.json
 |-- docs/
 |   |-- IMPLEMENTATION_PLAN.md
@@ -75,11 +77,13 @@ ai-training-pathfinder/
 |   |-- assessment-validation.js
 |   |-- catalog.js
 |   |-- configuration.js
+|   |-- recommendations.js
 |   `-- storage/
 |       |-- local-storage.js
 |       `-- storage-manager.js
 `-- tests/
-    `-- phase2-assessment.test.js
+    |-- phase2-assessment.test.js
+    `-- phase3-recommendations.test.js
 ```
 
 ## Running Locally
@@ -102,7 +106,7 @@ Another option is the Live Server extension for Visual Studio Code.
 
 ## Running Tests
 
-Phase 2 uses Node's built-in test runner with no external test dependency:
+Automated checks use Node's built-in test runner with no external test dependency:
 
 ```bash
 node --test
@@ -131,15 +135,17 @@ https://USERNAME.github.io/REPOSITORY-NAME/
 
 All internal file paths should remain relative so the application works correctly from a GitHub Pages repository subdirectory.
 
-## Current Phase 2 Behavior
+## Current Phase 3 Behavior
 
-Implemented through Phase 2:
+Implemented through Phase 3:
 
 - Responsive static app shell
 - Landing page
 - Assessment flow
 - Pure assessment validation
-- Placeholder views for My Path, Training Catalog, and Progress
+- Generated My Path view
+- Training Catalog view
+- Placeholder Progress view
 - Information-handling warning
 - Accessible guest/demo entry point
 - Configuration JSON
@@ -147,15 +153,18 @@ Implemented through Phase 2:
 - Separate practical AI fluency and technical-orientation scoring
 - Plain-language result evidence without showing raw numeric scores in the normal interface
 - Profile accuracy feedback
-- Unverified sample catalog records clearly labeled as sample data
+- Verified free external training-resource records with evidence notes
+- Deterministic recommendation scoring using editable JSON weights and thresholds
+- Five-stage recommended learning path
+- Internal fictional applied-practice cards
 
-Phase 2 does not include recommendation scoring, full progress tracking, achievements, Supabase, authentication, guest-to-account transfer, or production training-resource data.
+Phase 3 does not include full progress tracking, achievements, Supabase, authentication, guest-to-account transfer, or production completion attestation.
 
 ## Training Catalog
 
-The production training catalog will include verified free resources from reputable providers in a later phase.
+The training catalog includes verified free resources from reputable providers, with source notes and verification dates stored in `data/training-resources.json`.
 
-Course titles, links, durations, certificate information, pricing status, and providers must be verified before being presented as factual. The current catalog records are unverified sample data only.
+Course titles, links, durations, certificate information, pricing status, and providers must be verified before being presented as factual. When a fact is not verified, the catalog record must say so rather than guessing.
 
 ## Privacy And Information Handling
 
@@ -171,7 +180,7 @@ Users should not enter:
 - Proprietary organizational information
 - Account credentials or passwords
 
-The MVP should collect only the minimum information required to create recommendations and track learning progress. Phase 2 collects assessment selections and optional profile-accuracy feedback.
+The MVP should collect only the minimum information required to create recommendations and track learning progress. Phase 3 collects assessment selections and optional profile-accuracy feedback; progress tracking remains deferred.
 
 ## Accessibility
 

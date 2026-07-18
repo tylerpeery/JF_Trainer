@@ -2,6 +2,7 @@ import { loadCatalog } from "./catalog.js";
 import { loadConfiguration } from "./configuration.js";
 import { calculateProfile } from "./assessment.js";
 import { validateAssessmentAnswers } from "./assessment-validation.js";
+import { buildLearningPath } from "./recommendations.js";
 import { createStorageManager } from "./storage/storage-manager.js";
 
 const panels = Array.from(document.querySelectorAll("[data-view-panel]"));
@@ -10,6 +11,13 @@ const statusPanel = document.querySelector(".status-panel");
 const statusText = document.querySelector("#app-status");
 const mainContent = document.querySelector("#main-content");
 const storageManager = createStorageManager();
+const appData = {
+  appConfig: null,
+  assessmentConfig: null,
+  recommendationConfig: null,
+  catalog: [],
+  practiceCards: []
+};
 
 function setStatus(message, isError = false) {
   if (!statusPanel || !statusText) {
@@ -72,6 +80,25 @@ function createCard(title, body, items = []) {
   }
 
   return card;
+}
+
+function formatDuration(minutes, note = "") {
+  if (typeof minutes !== "number") {
+    return note || "Duration not stated";
+  }
+
+  if (minutes < 60) {
+    return `${minutes} min`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+
+  if (remainingMinutes === 0) {
+    return `${hours} hr`;
+  }
+
+  return `${hours} hr ${remainingMinutes} min`;
 }
 
 function createOptionInput({ type, name, value, label, description = "", checked = false }) {
@@ -616,31 +643,73 @@ function renderPathStages(stages) {
   container.replaceChildren(list);
 }
 
-function renderCatalog(catalog) {
+function createCatalogCard(resource) {
+  const card = document.createElement("article");
+  card.className = "catalog-card";
+
+  const label = document.createElement("span");
+  const isPractice = resource.provider === "AI Training Pathfinder";
+  const needsReview = resource.active === false || resource.verificationStatus === "manual-review";
+  label.className = resource.sampleData || needsReview
+    ? "sample-label"
+    : isPractice
+      ? "practice-label"
+      : "verified-label";
+  label.textContent = resource.sampleData
+    ? "Unverified sample data"
+    : needsReview
+      ? "Inactive provisional"
+      : isPractice
+        ? "Internal practice"
+        : resource.resourceType === "guided-reference-activity"
+          ? "Guided reference activity"
+          : "Verified free resource";
+
+  const heading = document.createElement("h3");
+  heading.textContent = resource.title;
+
+  const provider = document.createElement("p");
+  provider.textContent = `Provider: ${resource.provider}`;
+
+  const description = document.createElement("p");
+  description.textContent = resource.description;
+
+  const meta = document.createElement("p");
+  meta.className = "resource-meta";
+  meta.textContent = `${resource.pathStage || "Resource"} • ${resource.format || "Format not stated"} • ${formatDuration(resource.estimatedMinutes, resource.durationNote)}`;
+
+  const evidence = document.createElement("p");
+  evidence.textContent = needsReview
+    ? resource.evidenceNote || "This resource needs manual review before it can be recommended."
+    : resource.evidenceNote || resource.safetyReminder || "";
+
+  card.append(label, heading, provider, meta, description, evidence);
+
+  if (resource.url && resource.url !== "#") {
+    const link = document.createElement("a");
+    link.className = "resource-link";
+    link.href = resource.url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "Open resource";
+    card.append(link);
+  }
+
+  return card;
+}
+
+function renderCatalog(catalog, practiceCards) {
   const container = document.querySelector("#catalog-list");
-  const cards = catalog.map((resource) => {
-    const card = document.createElement("article");
-    card.className = "catalog-card";
-
-    const label = document.createElement("span");
-    label.className = "sample-label";
-    label.textContent = resource.sampleData ? "Unverified sample data" : "Verified resource";
-
-    const heading = document.createElement("h3");
-    heading.textContent = resource.title;
-
-    const provider = document.createElement("p");
-    provider.textContent = `Provider: ${resource.provider}`;
-
-    const description = document.createElement("p");
-    description.textContent = resource.description;
-
-    const evidence = document.createElement("p");
-    evidence.textContent = resource.evidenceNote;
-
-    card.append(label, heading, provider, description, evidence);
-    return card;
-  });
+  const cards = [
+    ...catalog.map(createCatalogCard),
+    ...practiceCards.map((practiceCard) =>
+      createCatalogCard({
+        ...practiceCard,
+        evidenceNote: "Internal fictional practice card. It uses only nonsensitive sample scenarios.",
+        sampleData: false
+      })
+    )
+  ];
 
   container.replaceChildren(...cards);
 }
@@ -675,9 +744,10 @@ function renderPathProfileSummary(result = null) {
     container.replaceChildren(
       createCard(
         "Assessment needed",
-        "Complete the assessment to see your profile dimensions here before Phase 3 recommendations are added."
+        "Complete the assessment to generate a five-stage learning path."
       )
     );
+    renderPathStages(appData.appConfig?.learningPathStages || []);
     return;
   }
 
@@ -696,6 +766,100 @@ function renderPathProfileSummary(result = null) {
     )
   );
   container.className = "assessment-results";
+  renderRecommendedPath(assessment);
+}
+
+function createRecommendationCard(item) {
+  const card = document.createElement("article");
+  card.className = "path-item";
+
+  const label = document.createElement("span");
+  label.className = item.type === "practice" ? "practice-label" : "verified-label";
+  label.textContent = item.type === "practice" ? "Internal practice" : "Verified resource";
+
+  const heading = document.createElement("h4");
+  heading.textContent = item.title;
+
+  const provider = document.createElement("p");
+  provider.className = "resource-meta";
+  provider.textContent = `${item.provider} • ${item.format || "Format not stated"} • ${formatDuration(item.estimatedMinutes, item.durationNote)}`;
+
+  const description = document.createElement("p");
+  description.textContent = item.description;
+
+  const reasons = document.createElement("ul");
+  reasons.className = "evidence-list";
+  item.reasons.forEach((reason) => {
+    const listItem = document.createElement("li");
+    listItem.textContent = reason;
+    reasons.append(listItem);
+  });
+
+  card.append(label, heading, provider, description);
+
+  if (item.reasons.length > 0) {
+    card.append(reasons);
+  }
+
+  if (item.type === "practice" && item.deliverable) {
+    const deliverable = document.createElement("p");
+    deliverable.className = "selection-note";
+    deliverable.textContent = `Practice deliverable: ${item.deliverable}`;
+    card.append(deliverable);
+  }
+
+  if (item.safetyReminder) {
+    const reminder = document.createElement("p");
+    reminder.className = "handling-reminder";
+    reminder.textContent = item.safetyReminder;
+    card.append(reminder);
+  }
+
+  if (item.url) {
+    const link = document.createElement("a");
+    link.className = "resource-link";
+    link.href = item.url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "Open resource";
+    card.append(link);
+  }
+
+  return card;
+}
+
+function renderRecommendedPath(assessment) {
+  const container = document.querySelector("#path-stage-list");
+  const path = buildLearningPath(
+    assessment,
+    appData.catalog,
+    appData.practiceCards,
+    appData.recommendationConfig
+  );
+
+  if (!path) {
+    renderPathStages(appData.appConfig?.learningPathStages || []);
+    return;
+  }
+
+  const sections = path.stages.map((stage) => {
+    const section = document.createElement("section");
+    section.className = "path-stage";
+    section.setAttribute("aria-labelledby", `${stage.stage.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-title`);
+
+    const heading = document.createElement("h3");
+    heading.id = `${stage.stage.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-title`;
+    heading.textContent = stage.stage;
+
+    const itemGrid = document.createElement("div");
+    itemGrid.className = "path-item-grid";
+    itemGrid.replaceChildren(...stage.items.map(createRecommendationCard));
+
+    section.append(heading, itemGrid);
+    return section;
+  });
+
+  container.replaceChildren(...sections);
 }
 
 function bindNavigation() {
@@ -736,10 +900,16 @@ async function init() {
 
   try {
     const [configuration, catalog] = await Promise.all([loadConfiguration(), loadCatalog()]);
+    appData.appConfig = configuration.appConfig;
+    appData.assessmentConfig = configuration.assessment;
+    appData.recommendationConfig = configuration.recommendation;
+    appData.catalog = catalog;
+    appData.practiceCards = configuration.appliedPracticeCards;
+
     renderAssessment(configuration.appConfig, configuration.assessment);
     renderPathStages(configuration.appConfig.learningPathStages);
     renderPathProfileSummary();
-    renderCatalog(catalog);
+    renderCatalog(catalog, configuration.appliedPracticeCards);
     renderStorageState();
 
     const { state, recoverableError } = storageManager.getSnapshot();

@@ -1,0 +1,45 @@
+{
+  "stageOrder": [
+    "AI foundation",
+    "Responsible use and output evaluation",
+    "Role-aligned application",
+    "Hands-on practice",
+    "Optional deeper learning"
+  ],
+  "stageItemLimits": {
+    "AI foundation": 2,
+    "Responsible use and output evaluation": 2,
+    "Role-aligned application": 2,
+    "Hands-on practice": 1,
+    "Optional deeper learning": 2
+  },
+  "weeklyTimeMinutes": {
+    "under-30": 30,
+    "30-60": 60,
+    "1-2": 120,
+    "2-4": 240,
+    "over-4": 300
+  },
+  "weights": {
+    "stageBase": 8,
+    "primaryField": 18,
+    "secondaryField": 8,
+    "allFields": 5,
+    "workPattern": 16,
+    "practicalFluency": 12,
+    "technicalOrientation": 10,
+    "learningGoal": 15,
+    "responsibility": 8,
+    "format": 6,
+    "timeFit": 4
+  },
+  "providerDiversity": {
+    "repeatProviderPenalty": 4
+  },
+  "thresholds": {
+    "minimumRecommendedScore": 8
+  },
+  "explanationLimits": {
+    "maximumReasonsPerItem": 4
+  }
+}

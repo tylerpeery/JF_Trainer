@@ -495,21 +495,29 @@ Each training-resource record should support:
 - Provider
 - Description
 - URL
+- Official source URL
 - Professional fields
 - Work patterns
 - Practical-fluency levels
 - Technical orientations
-- Estimated duration
+- Official duration in minutes when displayed by the provider
+- Duration status, including `needs-manual-verification` when no official duration is displayed
 - Format
 - Learning objectives
 - Prerequisites
+- Account or product requirements
 - Free-status verification
+- Free-access classification
 - Certificate availability
 - Foundational or optional status
 - Tags
 - Last verification date
 - Evidence or source note
 - Active/inactive status
+
+Catalog records must not estimate or invent duration. If a provider does not display an official duration, set the duration to `null`, mark the duration status as needing manual verification, and do not make a duration claim in the user interface.
+
+Inactive provisional records may be retained for manually reviewed resources, redirected destinations, or resources whose free status cannot be verified sufficiently. They must not be recommended until the unresolved verification issue is closed.
 
 The catalog remains editable as JSON without an administrator interface.
 
@@ -594,7 +602,7 @@ The app should collect only the minimum information needed to recommend learning
 
 ## Current Implemented Scope
 
-Implemented through Phase 2:
+Implemented through Phase 3:
 
 - Static GitHub Pages-compatible app shell
 - Safety warning and guest/demo entry point
@@ -604,12 +612,16 @@ Implemented through Phase 2:
 - Separate practical AI fluency and technical-orientation scoring
 - User feedback on whether the calculated profile seems accurate
 - Guest localStorage foundation for assessment results
+- Verified free-resource catalog with source evidence notes
+- Deterministic recommendation scoring using editable JSON weights and thresholds
+- Five-stage learning path generation
+- Plain-language recommendation explanations
+- Internal applied-practice cards using fictional, nonsensitive scenarios
 
 ## Deferred Features
 
-Deferred beyond the current Phase 2 scope:
+Deferred beyond the current Phase 3 scope:
 
-- Recommendation scoring
 - Full progress tracking
 - Achievement calculation
 - Supabase

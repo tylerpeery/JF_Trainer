@@ -6,12 +6,12 @@
 
 - Phase 1: Complete
 - Phase 2: Complete, repaired against the Joint Force assessment requirements
-- Phase 3: Not started
+- Phase 3: Complete
 - Phase 4: Not started
 - Phase 5: Not started
 - Phase 6: Not started
 
-Phase 3 and later work must not begin without a separate instruction.
+Phase 4 and later work must not begin without a separate instruction.
 
 ## Assumptions
 
@@ -19,8 +19,8 @@ Phase 3 and later work must not begin without a separate instruction.
 - `docs/PRODUCT_SPEC.md` controls product requirements.
 - `README.md` is public overview documentation and is not authoritative.
 - Supabase is deferred until Phase 5.
-- Phase 1 sample catalog records are unverified placeholders and are not production training data.
-- Account mode, guest transfer, recommendation scoring, and full progress features are intentionally deferred.
+- Phase 3 catalog records are production training-resource records with verification notes.
+- Account mode, guest transfer, and full progress features are intentionally deferred.
 
 ## Phase 1: Static App Shell And Safety Baseline
 
@@ -98,22 +98,28 @@ Dependencies:
 
 ## Phase 3: Catalog, Config, And Recommendation Engine
 
-Status: Not started
+Status: Complete
 
 Scope:
 
 - Replace sample catalog records with approximately 12 to 15 verified free resources.
+- Keep inactive provisional records for supplied resources whose exact destination, free status, or duration claim cannot be verified sufficiently.
 - Implement deterministic recommendation scoring using editable weights and thresholds.
 - Ensure every path includes all five required stages.
 - Produce plain-language explanations for recommendations.
 - Add internal applied-practice cards.
+- Keep recommendation logic separate from UI and storage code.
+- Keep recommendation weights and thresholds editable in JSON.
 
 Acceptance criteria:
 
 - No fabricated resource facts appear in the catalog.
-- Each production catalog record has verification evidence.
+- Each active production catalog record has verification evidence, an official source URL, a last verified date, an access classification, and either an official duration or a clear no-duration claim.
+- Inactive provisional records are not recommended.
 - Recommendation logic has no UI or storage dependency.
 - Every generated path includes AI foundation, responsible use and output evaluation, role-aligned application, hands-on practice, and optional deeper learning.
+- `node --test` passes for recommendation path coverage, catalog validation, and Phase 2 regression tests.
+- No Phase 4 progress tracking, completion controls, milestones, or achievement calculation is implemented.
 
 Dependencies:
 
@@ -191,9 +197,8 @@ Dependencies:
 
 ## Deferred Work
 
-The following are not part of Phase 2:
+The following are not part of Phase 3:
 
-- Recommendation scoring
 - Full progress tracking
 - Achievement calculation
 - Supabase implementation
