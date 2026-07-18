@@ -298,11 +298,23 @@ The MVP must not collect or process sensitive information. It must warn users no
 
 The app should collect only the minimum information needed to recommend learning resources and track user-attested learning progress.
 
+## Current Implemented Scope
+
+Implemented through Phase 2:
+
+- Static GitHub Pages-compatible app shell
+- Safety warning and guest/demo entry point
+- Configurable professional fields, work patterns, profile levels, milestones, and achievements
+- Short assessment flow
+- Field and work-pattern selection limits
+- Separate practical AI fluency and technical-orientation scoring
+- User feedback on whether the calculated profile seems accurate
+- Guest localStorage foundation for assessment results
+
 ## Deferred Features
 
-Deferred beyond the current Phase 1 scope:
+Deferred beyond the current Phase 2 scope:
 
-- Complete assessment and profile scoring
 - Recommendation scoring
 - Full progress tracking
 - Achievement calculation

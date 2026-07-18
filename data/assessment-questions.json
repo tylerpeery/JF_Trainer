@@ -1,0 +1,148 @@
+{
+  "assessmentVersion": "phase-2-v1",
+  "profileThresholds": {
+    "practicalFluency": [
+      { "maxScore": 0.74, "levelId": "new-to-ai" },
+      { "maxScore": 1.49, "levelId": "foundational-user" },
+      { "maxScore": 2.35, "levelId": "applied-user" },
+      { "maxScore": 3, "levelId": "advanced-practitioner" }
+    ],
+    "technicalOrientation": [
+      { "maxScore": 0.74, "levelId": "general-user" },
+      { "maxScore": 1.49, "levelId": "productivity-low-code" },
+      { "maxScore": 2.35, "levelId": "developer-data-practitioner" },
+      { "maxScore": 3, "levelId": "ai-ml-builder" }
+    ]
+  },
+  "questions": [
+    {
+      "id": "genAiFrequency",
+      "title": "How often have you used generative AI tools recently?",
+      "type": "single",
+      "required": true,
+      "options": [
+        { "id": "never", "label": "I have not used them yet", "fluencyScore": 0, "technicalScore": 0 },
+        { "id": "tried-once", "label": "I have tried them once or twice", "fluencyScore": 0.5, "technicalScore": 0 },
+        { "id": "monthly", "label": "A few times a month", "fluencyScore": 1, "technicalScore": 0.5 },
+        { "id": "weekly", "label": "At least weekly", "fluencyScore": 2, "technicalScore": 1 },
+        { "id": "daily", "label": "Most workdays", "fluencyScore": 3, "technicalScore": 1.5 }
+      ]
+    },
+    {
+      "id": "completedActivities",
+      "title": "Which AI-assisted activities have you completed independently?",
+      "type": "multiple",
+      "required": true,
+      "options": [
+        { "id": "none-yet", "label": "None yet", "fluencyScore": 0, "technicalScore": 0 },
+        { "id": "drafted-content", "label": "Drafted or revised written content", "fluencyScore": 1, "technicalScore": 0.5 },
+        { "id": "summarized-info", "label": "Summarized information and checked the result", "fluencyScore": 1.5, "technicalScore": 0.5 },
+        { "id": "prompt-iteration", "label": "Improved prompts through multiple iterations", "fluencyScore": 2, "technicalScore": 1 },
+        { "id": "workflow-support", "label": "Used AI inside a repeatable workflow", "fluencyScore": 2.5, "technicalScore": 1.5 },
+        { "id": "code-data", "label": "Used AI for code, data, or automation work", "fluencyScore": 2.5, "technicalScore": 2.5 },
+        { "id": "evaluated-system", "label": "Evaluated or configured an AI-enabled tool", "fluencyScore": 3, "technicalScore": 3 }
+      ]
+    },
+    {
+      "id": "verifyOutput",
+      "title": "If an AI answer sounds plausible but important, what would you do?",
+      "type": "single",
+      "required": true,
+      "options": [
+        { "id": "accept", "label": "Use it if it sounds confident", "fluencyScore": 0, "technicalScore": 0 },
+        { "id": "quick-check", "label": "Do a quick reasonableness check", "fluencyScore": 1, "technicalScore": 0.5 },
+        { "id": "source-check", "label": "Check it against trusted sources or source material", "fluencyScore": 2, "technicalScore": 1 },
+        { "id": "structured-review", "label": "Use a structured review before acting on it", "fluencyScore": 3, "technicalScore": 1.5 }
+      ]
+    },
+    {
+      "id": "promptBreakdown",
+      "title": "When an AI response is not useful, what is your usual next step?",
+      "type": "single",
+      "required": true,
+      "options": [
+        { "id": "stop", "label": "Stop using the tool for that task", "fluencyScore": 0, "technicalScore": 0 },
+        { "id": "retry-simple", "label": "Ask the same thing in a simpler way", "fluencyScore": 1, "technicalScore": 0.5 },
+        { "id": "add-context", "label": "Add context, constraints, or examples", "fluencyScore": 2, "technicalScore": 1 },
+        { "id": "break-down", "label": "Break the task into smaller steps and evaluate each one", "fluencyScore": 3, "technicalScore": 1.5 }
+      ]
+    },
+    {
+      "id": "responsibleHandling",
+      "title": "How would you handle work information in a public AI tool?",
+      "type": "single",
+      "required": true,
+      "options": [
+        { "id": "paste-needed", "label": "Paste whatever is needed to get the best answer", "fluencyScore": 0, "technicalScore": 0 },
+        { "id": "remove-obvious", "label": "Remove obvious names and identifiers first", "fluencyScore": 1, "technicalScore": 0.5 },
+        { "id": "use-fictional", "label": "Use fictional or generalized information whenever possible", "fluencyScore": 2, "technicalScore": 1 },
+        { "id": "follow-policy", "label": "Follow approved tools, policies, and data-handling rules", "fluencyScore": 3, "technicalScore": 1.5 }
+      ]
+    },
+    {
+      "id": "limitations",
+      "title": "Which statement best matches your understanding of generative AI limitations?",
+      "type": "single",
+      "required": true,
+      "options": [
+        { "id": "mostly-correct", "label": "It is usually correct when it sounds confident", "fluencyScore": 0, "technicalScore": 0 },
+        { "id": "some-errors", "label": "It can make mistakes, so I should check important outputs", "fluencyScore": 1.5, "technicalScore": 0.5 },
+        { "id": "context-limits", "label": "It has context, recency, bias, and source limitations", "fluencyScore": 2.5, "technicalScore": 1.5 },
+        { "id": "risk-aware", "label": "I account for limitations when designing or reviewing AI-assisted work", "fluencyScore": 3, "technicalScore": 2 }
+      ]
+    },
+    {
+      "id": "technicalExperience",
+      "title": "Which technical background best describes you?",
+      "type": "single",
+      "required": true,
+      "options": [
+        { "id": "general", "label": "I use standard office or productivity tools", "fluencyScore": 0.5, "technicalScore": 0 },
+        { "id": "low-code", "label": "I use templates, formulas, automations, or low-code tools", "fluencyScore": 1, "technicalScore": 1 },
+        { "id": "developer-data", "label": "I work with code, data, analytics, APIs, or scripts", "fluencyScore": 1.5, "technicalScore": 2 },
+        { "id": "ai-builder", "label": "I build, adapt, evaluate, or govern AI/ML systems", "fluencyScore": 2, "technicalScore": 3 }
+      ]
+    },
+    {
+      "id": "aiResponsibilities",
+      "title": "Which AI-related responsibilities apply to you?",
+      "type": "multiple",
+      "required": true,
+      "options": [
+        { "id": "individual-user", "label": "I mainly use AI for my own work", "fluencyScore": 0.5, "technicalScore": 0 },
+        { "id": "reviewer", "label": "I review AI-assisted work before it is used", "fluencyScore": 1.5, "technicalScore": 0.5 },
+        { "id": "supervisor", "label": "I supervise or approve AI-assisted work", "fluencyScore": 2, "technicalScore": 1 },
+        { "id": "governance", "label": "I help set policy, governance, or review practices", "fluencyScore": 2.5, "technicalScore": 1.5 },
+        { "id": "builder", "label": "I build or configure AI-assisted workflows or systems", "fluencyScore": 2.5, "technicalScore": 2.5 }
+      ]
+    }
+  ],
+  "learningGoals": [
+    "Understand AI basics",
+    "Use AI responsibly",
+    "Evaluate AI outputs",
+    "Improve prompting and task breakdown",
+    "Apply AI to my role",
+    "Build or automate workflows",
+    "Govern or supervise AI-assisted work"
+  ],
+  "weeklyTimeOptions": [
+    { "id": "under-1", "label": "Less than 1 hour per week" },
+    { "id": "1-2", "label": "1 to 2 hours per week" },
+    { "id": "3-5", "label": "3 to 5 hours per week" },
+    { "id": "over-5", "label": "More than 5 hours per week" }
+  ],
+  "preferredFormats": [
+    "Short articles or guides",
+    "Self-paced course",
+    "Video",
+    "Hands-on exercise",
+    "Documentation or reference",
+    "Scenario-based practice"
+  ],
+  "accuracyOptions": [
+    { "id": "accurate", "label": "Yes, this seems accurate" },
+    { "id": "partly", "label": "Partly accurate" },
+    { "id": "not-accurate", "label": "No, this does not seem accurate" }
+  ]
+}

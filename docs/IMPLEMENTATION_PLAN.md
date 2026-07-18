@@ -4,14 +4,14 @@
 
 ## Current Phase Status
 
-- Phase 1: In progress
-- Phase 2: Not started
+- Phase 1: Complete
+- Phase 2: Complete
 - Phase 3: Not started
 - Phase 4: Not started
 - Phase 5: Not started
 - Phase 6: Not started
 
-Only Phase 1 is approved for the current task. Do not begin Phase 2 or later work without a separate instruction.
+Phase 3 and later work must not begin without a separate instruction.
 
 ## Assumptions
 
@@ -24,7 +24,7 @@ Only Phase 1 is approved for the current task. Do not begin Phase 2 or later wor
 
 ## Phase 1: Static App Shell And Safety Baseline
 
-Status: In progress
+Status: Complete
 
 Scope:
 
@@ -60,7 +60,7 @@ Dependencies:
 
 ## Phase 2: Assessment And Profile Scoring
 
-Status: Not started
+Status: Complete
 
 Scope:
 
@@ -68,6 +68,7 @@ Scope:
 - Enforce field and work-pattern selection limits.
 - Calculate practical AI fluency and technical orientation separately.
 - Capture whether the result seems accurate.
+- Save the guest assessment result and profile-accuracy feedback in the existing localStorage foundation.
 
 Acceptance criteria:
 
@@ -76,6 +77,7 @@ Acceptance criteria:
 - Selection limits are enforced.
 - No required free text is introduced.
 - Phase 1 safety warning remains visible or readily available.
+- No recommendation scoring or catalog matching is implemented.
 
 Dependencies:
 
@@ -176,10 +178,8 @@ Dependencies:
 
 ## Deferred Work
 
-The following are not part of Phase 1:
+The following are not part of Phase 2:
 
-- Complete assessment
-- Profile scoring
 - Recommendation scoring
 - Full progress tracking
 - Achievement calculation

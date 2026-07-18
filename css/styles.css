@@ -287,7 +287,9 @@ a:focus-visible,
 }
 
 .placeholder-grid,
-.catalog-list {
+.catalog-list,
+.assessment-results,
+.assessment-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
@@ -295,7 +297,9 @@ a:focus-visible,
 }
 
 .summary-card,
-.catalog-card {
+.catalog-card,
+.assessment-card,
+.result-card {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   background: #ffffff;
@@ -303,14 +307,124 @@ a:focus-visible,
 }
 
 .summary-card h3,
-.catalog-card h3 {
+.catalog-card h3,
+.assessment-card h3,
+.result-card h3 {
   margin: 0 0 0.5rem;
   font-size: 1.05rem;
 }
 
 .summary-card p,
-.catalog-card p {
+.catalog-card p,
+.assessment-card p,
+.result-card p {
   color: var(--color-muted);
+}
+
+.assessment-form {
+  margin-top: 1.25rem;
+}
+
+.assessment-section {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #ffffff;
+}
+
+.assessment-section legend {
+  padding: 0 0.3rem;
+  font-weight: 700;
+}
+
+.assessment-section select {
+  width: min(100%, 32rem);
+  min-height: 2.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.6rem;
+  background: #ffffff;
+  color: var(--color-text);
+}
+
+.choice-subsection {
+  margin-top: 1rem;
+}
+
+.choice-subsection h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.option-stack {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+}
+
+.option-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.65rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #f8fafc;
+}
+
+.option-row input {
+  margin-top: 0.2rem;
+  flex: 0 0 auto;
+}
+
+.option-row:has(input:checked) {
+  border-color: var(--color-primary);
+  background: #eef5f7;
+}
+
+.selection-note,
+.form-errors {
+  margin-top: 0.75rem;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.form-errors {
+  color: var(--color-error);
+  font-weight: 700;
+}
+
+.assessment-actions,
+.accuracy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.assessment-results {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.result-card strong {
+  display: block;
+  font-size: 1.35rem;
+  color: var(--color-primary-strong);
+}
+
+.result-card .score {
+  margin: 0.45rem 0 0;
+  color: var(--color-muted);
+}
+
+.profile-summary {
+  margin-top: 1rem;
+}
+
+.profile-summary[hidden] {
+  display: none !important;
 }
 
 .tag-list {
@@ -398,6 +512,8 @@ a:focus-visible,
   .intro-grid,
   .placeholder-grid,
   .catalog-list,
+  .assessment-results,
+  .assessment-grid,
   .state-summary {
     grid-template-columns: 1fr;
   }

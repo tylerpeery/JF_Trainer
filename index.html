@@ -54,12 +54,12 @@
       <section class="view-panel" data-view-panel="home" aria-labelledby="home-title">
         <div class="intro-grid">
           <div class="intro-copy">
-            <p class="eyebrow">Phase 1 shell</p>
+            <p class="eyebrow">Phase 2 assessment</p>
             <h2 id="home-title">Find a safer starting point for AI training.</h2>
             <p>
               This pilot shell will guide users toward free AI training based on their field,
               work patterns, practical AI fluency, technical orientation, goals, and available
-              time. Assessment scoring and recommendations are intentionally deferred.
+              time. Phase 2 adds assessment scoring; recommendations begin in Phase 3.
             </p>
             <div class="action-row">
               <button class="primary-action" type="button" data-start-guest>
@@ -90,14 +90,14 @@
 
       <section class="view-panel" data-view-panel="assessment" aria-labelledby="assessment-title" hidden>
         <div class="section-heading">
-          <p class="eyebrow">Placeholder</p>
+          <p class="eyebrow">3 to 5 minutes</p>
           <h2 id="assessment-title">Assessment</h2>
           <p>
-            Phase 2 will add a short behavior- and scenario-based assessment. For Phase 1,
-            this view confirms the navigation and shell are ready.
+            Answer behavior- and scenario-based questions to estimate your practical AI
+            fluency and technical orientation. Do not include sensitive information.
           </p>
         </div>
-        <div class="placeholder-grid" id="assessment-config-summary"></div>
+        <div id="assessment-root"></div>
       </section>
 
       <section class="view-panel" data-view-panel="path" aria-labelledby="path-title" hidden>
@@ -105,10 +105,11 @@
           <p class="eyebrow">Placeholder</p>
           <h2 id="path-title">My Path</h2>
           <p>
-            Personalized path generation begins in Phase 3 after assessment scoring exists.
-            No recommendation scoring is implemented in Phase 1.
+            Personalized path generation begins in Phase 3. Phase 2 shows your assessment
+            profile here without scoring training resources.
           </p>
         </div>
+        <div id="path-profile-summary"></div>
         <div class="stage-list" id="path-stage-list"></div>
       </section>
 
@@ -146,13 +147,17 @@
             <dt>Storage health</dt>
             <dd id="storage-health">Checking...</dd>
           </div>
+          <div>
+            <dt>Assessment status</dt>
+            <dd id="assessment-storage-status">Not completed</dd>
+          </div>
         </dl>
       </section>
     </main>
 
     <footer class="site-footer">
       <p>
-        Phase 1 static shell. Milestones measure engagement only and do not represent
+        Phase 2 assessment MVP. Milestones measure engagement only and do not represent
         certification, authorization, mission readiness, or validated job proficiency.
       </p>
     </footer>

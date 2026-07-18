@@ -1,5 +1,6 @@
 const CONFIG_FILES = {
   appConfig: "../data/app-config.json",
+  assessment: "../data/assessment-questions.json",
   milestones: "../data/milestones.json",
   achievements: "../data/achievements.json"
 };

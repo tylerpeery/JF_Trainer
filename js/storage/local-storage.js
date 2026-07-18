@@ -7,6 +7,7 @@ function createDefaultState() {
     mode: "guest",
     activeView: "home",
     guestStartedAt: null,
+    assessment: null,
     progress: {
       resourceStates: {}
     },

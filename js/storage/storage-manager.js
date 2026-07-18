@@ -28,9 +28,41 @@ export function createStorageManager(adapter = createLocalStorageAdapter()) {
     return lastLoad;
   }
 
+  function saveAssessmentResult(assessmentResult) {
+    lastLoad = adapter.update((state) => ({
+      ...state,
+      assessment: {
+        ...assessmentResult,
+        accuracyFeedback: null
+      },
+      activeView: "assessment"
+    }));
+
+    return lastLoad;
+  }
+
+  function saveAssessmentAccuracyFeedback(feedbackId) {
+    lastLoad = adapter.update((state) => ({
+      ...state,
+      assessment: state.assessment
+        ? {
+            ...state.assessment,
+            accuracyFeedback: {
+              value: feedbackId,
+              updatedAt: new Date().toISOString()
+            }
+          }
+        : null
+    }));
+
+    return lastLoad;
+  }
+
   return {
     getSnapshot,
     setActiveView,
-    startGuestSession
+    startGuestSession,
+    saveAssessmentResult,
+    saveAssessmentAccuracyFeedback
   };
 }

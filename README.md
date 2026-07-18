@@ -6,7 +6,7 @@ Users will complete a short assessment, receive an explainable learning path, fo
 
 ## Project Status
 
-This project is in Phase 1: Static App Shell and Safety Baseline. Phase 1 includes the static application shell, placeholder views, safety warning, configuration data, sample-only catalog records, and storage foundation.
+This project is implemented through Phase 2: Assessment and Profile Scoring. Phase 2 includes the static application shell, safety warning, configuration data, sample-only catalog records, storage foundation, assessment flow, profile scoring, and profile-accuracy feedback.
 
 It is intended for a small pilot group of approximately 3 to 12 testers. It is not intended for large-scale deployment, enterprise use, official certification, or operational-readiness determinations.
 
@@ -117,20 +117,23 @@ https://USERNAME.github.io/REPOSITORY-NAME/
 
 All internal file paths should remain relative so the application works correctly from a GitHub Pages repository subdirectory.
 
-## Current Phase 1 Behavior
+## Current Phase 2 Behavior
 
-Phase 1 includes:
+Implemented through Phase 2:
 
 - Responsive static app shell
 - Landing page
-- Placeholder views for Assessment, My Path, Training Catalog, and Progress
+- Assessment flow
+- Placeholder views for My Path, Training Catalog, and Progress
 - Information-handling warning
 - Accessible guest/demo entry point
 - Configuration JSON
 - localStorage adapter foundation
+- Separate practical AI fluency and technical-orientation scoring
+- Profile accuracy feedback
 - Unverified sample catalog records clearly labeled as sample data
 
-Phase 1 does not include complete assessment scoring, recommendation scoring, full progress tracking, achievements, Supabase, authentication, guest-to-account transfer, or production training-resource data.
+Phase 2 does not include recommendation scoring, full progress tracking, achievements, Supabase, authentication, guest-to-account transfer, or production training-resource data.
 
 ## Training Catalog
 
@@ -152,7 +155,7 @@ Users should not enter:
 - Proprietary organizational information
 - Account credentials or passwords
 
-The MVP should collect only the minimum information required to create recommendations and track learning progress. Phase 1 does not collect assessment or progress details.
+The MVP should collect only the minimum information required to create recommendations and track learning progress. Phase 2 collects assessment selections and optional profile-accuracy feedback.
 
 ## Accessibility
 

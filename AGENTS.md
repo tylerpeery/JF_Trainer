@@ -48,6 +48,6 @@ Before declaring a task complete:
 - Verify the normal navigation flow with keyboard and pointer.
 - Confirm the safety warning is clearly visible.
 - Confirm missing or corrupted app-owned `localStorage` does not crash the app.
-- Confirm no browser console errors appear in the normal Phase 1 flow.
-- Confirm no Phase 2 or later functionality was implemented unless separately requested.
+- Confirm no browser console errors appear in the normal approved flow.
+- Confirm no later-phase functionality was implemented unless separately requested.
 - Review the diff and update `docs/PRODUCT_SPEC.md` or `docs/IMPLEMENTATION_PLAN.md` when behavior, scope, phases, or acceptance criteria change.
