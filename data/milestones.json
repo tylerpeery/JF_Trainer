@@ -1,0 +1,38 @@
+[
+  {
+    "id": "path-selected",
+    "name": "Path Selected",
+    "requiredHours": 0,
+    "description": "Assessment completed and initial learning path selected."
+  },
+  {
+    "id": "orientation-complete",
+    "name": "Orientation Complete",
+    "requiredHours": 1,
+    "description": "One hour of learning engagement recorded."
+  },
+  {
+    "id": "foundation-building",
+    "name": "Foundation Building",
+    "requiredHours": 3,
+    "description": "Three hours of learning engagement recorded."
+  },
+  {
+    "id": "adoption-momentum",
+    "name": "Adoption Momentum",
+    "requiredHours": 5,
+    "description": "Five hours of learning engagement recorded."
+  },
+  {
+    "id": "applied-foundation",
+    "name": "Applied Foundation",
+    "requiredHours": 10,
+    "description": "Ten hours of learning engagement recorded."
+  },
+  {
+    "id": "continued-development",
+    "name": "Continued Development",
+    "requiredHours": 10.01,
+    "description": "Continued learning engagement beyond ten hours."
+  }
+]

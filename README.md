@@ -1,93 +1,84 @@
-# jftrainer
-An AI tailored and AI vectored training for members to reach AI activation within the JF, geared toward their specialty and experience levels.
-
 # AI Training Pathfinder
 
-AI Training Pathfinder is a small demonstration tool designed to help users find free AI training that is relevant to their professional field, work activities, experience level, learning goals, and available time.
+AI Training Pathfinder is a small demonstration MVP that will help users find free AI training relevant to their professional field, work patterns, practical AI fluency, technical orientation, learning goals, and available time.
 
-Users complete a short assessment, receive an explainable learning path, follow links to external training resources, and track their progress toward configurable learning milestones.
+Users will complete a short assessment, receive an explainable learning path, follow links to reputable free external training, and track progress through professional learning milestones.
 
 ## Project Status
 
-This project is currently an early MVP intended for a pilot group of approximately 3–12 users.
+This project is in Phase 1: Static App Shell and Safety Baseline. Phase 1 includes the static application shell, placeholder views, safety warning, configuration data, sample-only catalog records, and storage foundation.
 
-It is not intended for large-scale deployment, enterprise use, official certification, or operational-readiness determinations.
+It is intended for a small pilot group of approximately 3 to 12 testers. It is not intended for large-scale deployment, enterprise use, official certification, or operational-readiness determinations.
+
+Authoritative documentation:
+
+- Product requirements: `docs/PRODUCT_SPEC.md`
+- Implementation phases and acceptance criteria: `docs/IMPLEMENTATION_PLAN.md`
+- Repository working instructions: `AGENTS.md`
+
+`README.md` is a public overview and is not authoritative when it conflicts with the product specification.
 
 ## Planned Features
 
-* Short AI experience and learning-needs assessment
-* Separate practical AI fluency and technical-orientation profiles
-* Role- and work-pattern-based training recommendations
-* Explainable recommendation logic
-* Curated catalog of free external AI training
-* Guest mode using browser storage
-* Optional user accounts with globally saved progress
-* Training completion tracking
-* Five- and ten-hour learning milestones
-* Professional achievements and progress indicators
-* Short role-aligned practice activities
-* Resource relevance and difficulty feedback
+- Short AI experience and learning-needs assessment
+- Separate practical AI fluency and technical-orientation profiles
+- Role- and work-pattern-based training recommendations
+- Explainable recommendation logic
+- Curated catalog of free external AI training
+- Guest mode using browser storage
+- Optional user accounts with globally saved progress
+- Training completion tracking
+- Five- and ten-hour learning milestones
+- Professional achievements and progress indicators
+- Short role-aligned practice activities
+- Resource relevance and difficulty feedback
 
-## Learning Milestones
+## Technology Approach
 
-The application may display milestones such as:
+The MVP uses:
 
-* Path Selected
-* Orientation Complete
-* Foundation Building
-* Adoption Momentum
-* Applied Foundation
-* Continued Development
+- HTML
+- CSS
+- JavaScript ES modules
+- GitHub Pages
+- Browser `localStorage` for guest mode
+- Supabase for optional authentication and globally saved progress, deferred until Phase 5
+- Static JSON configuration and catalog data
+- A deterministic, rules-based recommendation engine in a later phase
 
-These milestones measure learning participation and engagement.
-
-They do not represent certification, authorization, mission readiness, or validated professional proficiency.
-
-## Initial Technology Approach
-
-The initial MVP is expected to use:
-
-* HTML
-* CSS
-* JavaScript ES modules
-* GitHub Pages
-* Browser `localStorage` for guest mode
-* Supabase for optional authentication and globally saved progress
-* A static JSON training catalog
-* A deterministic, rules-based recommendation engine
-
-The initial version will not use React, Vite, a custom application server, or an LLM API unless later development demonstrates a clear need.
+The MVP does not use React, Vite, TypeScript, a custom application server, or an LLM API.
 
 ## Project Structure
 
-The final structure may evolve, but the repository is expected to resemble:
+The Phase 1 structure is:
 
 ```text
 ai-training-pathfinder/
-├── index.html
-├── README.md
-├── AGENTS.md
-├── assets/
-├── css/
-│   └── styles.css
-├── data/
-│   └── training-resources.json
-├── docs/
-│   ├── PRODUCT_SPEC.md
-│   └── IMPLEMENTATION_PLAN.md
-└── js/
-    ├── app.js
-    ├── assessment.js
-    ├── catalog.js
-    ├── configuration.js
-    ├── progress.js
-    ├── recommendations.js
-    └── storage.js
+|-- index.html
+|-- README.md
+|-- AGENTS.md
+|-- css/
+|   `-- styles.css
+|-- data/
+|   |-- achievements.json
+|   |-- app-config.json
+|   |-- milestones.json
+|   `-- training-resources.json
+|-- docs/
+|   |-- IMPLEMENTATION_PLAN.md
+|   `-- PRODUCT_SPEC.md
+`-- js/
+    |-- app.js
+    |-- catalog.js
+    |-- configuration.js
+    `-- storage/
+        |-- local-storage.js
+        `-- storage-manager.js
 ```
 
 ## Running Locally
 
-Because this project uses JavaScript modules and may load JSON files, it should be opened through a local web server rather than by double-clicking `index.html`.
+Because this project uses JavaScript modules and loads JSON files, open it through a local web server rather than by double-clicking `index.html`.
 
 One simple option is Python:
 
@@ -110,8 +101,8 @@ The site is intended to be published through GitHub Pages.
 General setup:
 
 1. Push the project to a GitHub repository.
-2. Open the repository’s **Settings**.
-3. Select **Pages**.
+2. Open the repository's Settings.
+3. Select Pages.
 4. Choose deployment from a branch.
 5. Select the appropriate branch, usually `main`.
 6. Select the repository root as the publishing folder.
@@ -124,123 +115,70 @@ The published address will normally resemble:
 https://USERNAME.github.io/REPOSITORY-NAME/
 ```
 
-All internal file paths should be relative so the application works correctly from a GitHub Pages repository subdirectory.
+All internal file paths should remain relative so the application works correctly from a GitHub Pages repository subdirectory.
 
-## Guest Mode
+## Current Phase 1 Behavior
 
-Guest-mode progress is stored in the user’s browser.
+Phase 1 includes:
 
-Guest users should be informed that:
+- Responsive static app shell
+- Landing page
+- Placeholder views for Assessment, My Path, Training Catalog, and Progress
+- Information-handling warning
+- Accessible guest/demo entry point
+- Configuration JSON
+- localStorage adapter foundation
+- Unverified sample catalog records clearly labeled as sample data
 
-* Their progress remains on the same browser and device.
-* Clearing browser data may erase their progress.
-* Progress will not automatically transfer between devices.
-* Export and reset controls should be available.
-
-## Account Mode
-
-A later phase will use Supabase to provide:
-
-* User authentication
-* Cross-device progress
-* Saved assessment results
-* Training completion records
-* Earned achievements
-
-Supabase Row Level Security must ensure that users can only access their own profile and progress records.
-
-No Supabase service-role key or other private credential may be included in browser code or committed to this repository.
+Phase 1 does not include complete assessment scoring, recommendation scoring, full progress tracking, achievements, Supabase, authentication, guest-to-account transfer, or production training-resource data.
 
 ## Training Catalog
 
-The training catalog will include free resources from reputable providers.
+The production training catalog will include verified free resources from reputable providers in a later phase.
 
-Potential providers include:
+Course titles, links, durations, certificate information, pricing status, and providers must be verified before being presented as factual. The current catalog records are unverified sample data only.
 
-* IBM SkillsBuild
-* Microsoft Learn
-* Elements of AI
-* Google Machine Learning education
-* AWS Skill Builder
-* NIST
-* OpenAI Academy, after access and cost are verified
-
-Course titles, links, durations, certificate information, and pricing status must be verified before being presented as factual.
-
-The application must not invent training resources or course details.
-
-## Privacy and Information Handling
+## Privacy And Information Handling
 
 This project is not designed to collect or process sensitive information.
 
 Users should not enter:
 
-* Classified information
-* Controlled unclassified information
-* Operationally sensitive information
-* Protected medical information
-* Personally identifiable information
-* Proprietary organizational information
-* Account credentials or passwords
+- Classified information
+- Controlled information
+- Operationally sensitive information
+- Protected medical information
+- Personally identifiable information
+- Proprietary organizational information
+- Account credentials or passwords
 
-The MVP should collect only the minimum information required to create recommendations and track learning progress.
+The MVP should collect only the minimum information required to create recommendations and track learning progress. Phase 1 does not collect assessment or progress details.
 
 ## Accessibility
 
 The project should follow accessible web-design practices, including:
 
-* Semantic HTML
-* Keyboard navigation
-* Accessible form labels
-* Sufficient contrast
-* Screen-reader-friendly progress indicators
-* Reduced-motion support
-* No information communicated through color alone
+- Semantic HTML
+- Keyboard navigation
+- Accessible form labels
+- Sufficient contrast
+- Screen-reader-friendly progress indicators
+- Reduced-motion support
+- No information communicated through color alone
 
 The target is general alignment with WCAG 2.1 AA practices.
 
-## Recommendation Approach
+## Development Notes
 
-The initial recommendation system will use transparent rules rather than an AI model.
-
-Recommendations may consider:
-
-* Professional field
-* Common work patterns
-* Practical AI fluency
-* Technical orientation
-* Learning goals
-* Available weekly time
-* Preferred learning format
-* Course prerequisites
-* Previously completed resources
-* Provider diversity
-
-Each recommendation should include a plain-language explanation of why it was selected.
-
-## Development Principles
-
-* Keep the initial implementation simple.
-* Separate recommendation logic from the interface.
-* Separate storage logic from the interface.
-* Keep configuration values editable.
-* Use stable identifiers for resources and achievements.
-* Avoid unnecessary dependencies.
-* Do not fabricate external resource information.
-* Preserve accessibility and mobile usability.
-* Verify normal user flows before marking a phase complete.
-
-## Contributing
-
-This repository is currently an experimental MVP.
-
-Before making substantial changes, review:
-
-* `AGENTS.md`
-* `docs/PRODUCT_SPEC.md`
-* `docs/IMPLEMENTATION_PLAN.md`
-
-Changes that affect product behavior, architecture, data handling, or milestone definitions should also update the relevant documentation.
+- Keep the initial implementation simple.
+- Separate recommendation logic from the interface.
+- Separate storage logic from the interface.
+- Keep configuration values editable.
+- Use stable identifiers for resources and achievements.
+- Avoid unnecessary dependencies.
+- Do not fabricate external resource information.
+- Preserve accessibility and mobile usability.
+- Verify normal user flows before marking a phase complete.
 
 ## License
 

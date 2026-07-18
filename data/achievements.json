@@ -1,0 +1,62 @@
+[
+  {
+    "id": "path-selected",
+    "name": "Path Selected",
+    "description": "Complete the assessment and select a learning path.",
+    "phaseAvailable": 4
+  },
+  {
+    "id": "first-step",
+    "name": "First Step",
+    "description": "Complete the first attested learning activity.",
+    "phaseAvailable": 4
+  },
+  {
+    "id": "foundation-built",
+    "name": "Foundation Built",
+    "description": "Complete foundation-oriented learning.",
+    "phaseAvailable": 4
+  },
+  {
+    "id": "responsible-ai-learner",
+    "name": "Responsible AI Learner",
+    "description": "Complete responsible-use learning.",
+    "phaseAvailable": 4
+  },
+  {
+    "id": "evidence-checker",
+    "name": "Evidence Checker",
+    "description": "Complete learning or practice focused on evaluating AI output.",
+    "phaseAvailable": 4
+  },
+  {
+    "id": "workflow-designer",
+    "name": "Workflow Designer",
+    "description": "Complete learning or practice focused on AI-assisted workflows.",
+    "phaseAvailable": 4
+  },
+  {
+    "id": "role-aligned-learner",
+    "name": "Role-Aligned Learner",
+    "description": "Complete learning aligned to selected professional work.",
+    "phaseAvailable": 4
+  },
+  {
+    "id": "adoption-momentum",
+    "name": "Adoption Momentum",
+    "description": "Reach the five-hour engagement milestone.",
+    "phaseAvailable": 4
+  },
+  {
+    "id": "applied-foundation",
+    "name": "Applied Foundation",
+    "description": "Reach the ten-hour engagement milestone.",
+    "phaseAvailable": 4
+  },
+  {
+    "id": "cross-functional-learner",
+    "name": "Cross-Functional Learner",
+    "description": "Complete learning across more than one work pattern.",
+    "phaseAvailable": 4
+  }
+]

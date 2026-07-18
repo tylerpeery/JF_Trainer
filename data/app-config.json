@@ -1,0 +1,79 @@
+{
+  "professionalFields": [
+    "Intelligence, research, and analysis",
+    "Operations and mission planning",
+    "Maintenance and logistics",
+    "Acquisition and program management",
+    "Cybersecurity and information technology",
+    "Software development, data, and AI",
+    "Healthcare",
+    "Education, training, and communication",
+    "Leadership, policy, and governance",
+    "Administration and general support",
+    "Other"
+  ],
+  "workPatterns": [
+    "Analyze information",
+    "Create and communicate",
+    "Plan and decide",
+    "Build and automate",
+    "Sustain and optimize",
+    "Lead and govern"
+  ],
+  "practicalFluencyLevels": [
+    {
+      "id": "new-to-ai",
+      "label": "New to AI",
+      "description": "Has little or no recent hands-on experience with generative AI tools."
+    },
+    {
+      "id": "foundational-user",
+      "label": "Foundational user",
+      "description": "Can use common AI tools for simple tasks and wants stronger foundations."
+    },
+    {
+      "id": "applied-user",
+      "label": "Applied user",
+      "description": "Uses AI in practical workflows and wants to improve quality and judgment."
+    },
+    {
+      "id": "advanced-practitioner",
+      "label": "Advanced practitioner",
+      "description": "Designs, evaluates, supervises, or extends AI-assisted work."
+    }
+  ],
+  "technicalOrientationLevels": [
+    {
+      "id": "general-user",
+      "label": "General user",
+      "description": "Uses AI through everyday tools without building technical systems."
+    },
+    {
+      "id": "productivity-low-code",
+      "label": "Productivity and low-code user",
+      "description": "Uses automations, low-code tools, templates, or productivity workflows."
+    },
+    {
+      "id": "developer-data-practitioner",
+      "label": "Developer or data practitioner",
+      "description": "Works with code, data, analytics, APIs, or technical platforms."
+    },
+    {
+      "id": "ai-ml-builder",
+      "label": "AI/ML builder",
+      "description": "Builds, adapts, evaluates, or governs AI/ML-enabled systems."
+    }
+  ],
+  "selectionRules": {
+    "primaryFieldsRequired": 1,
+    "secondaryFieldsMaximum": 2,
+    "workPatternsMaximum": 3
+  },
+  "learningPathStages": [
+    "AI foundation",
+    "Responsible use and output evaluation",
+    "Role-aligned application",
+    "Hands-on practice",
+    "Optional deeper learning"
+  ]
+}

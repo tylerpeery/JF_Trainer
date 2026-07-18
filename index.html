@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Training Pathfinder</title>
+    <meta
+      name="description"
+      content="A static MVP shell for finding free AI training paths by role, work pattern, and learning goals."
+    >
+    <link rel="stylesheet" href="./css/styles.css">
+    <script type="module" src="./js/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="brand-block">
+          <span class="brand-mark" aria-hidden="true">ATP</span>
+          <div>
+            <p class="eyebrow">Demonstration MVP</p>
+            <h1>AI Training Pathfinder</h1>
+          </div>
+        </div>
+
+        <nav class="primary-nav" aria-label="Primary">
+          <button class="nav-link" type="button" data-view="home" aria-current="page">Home</button>
+          <button class="nav-link" type="button" data-view="assessment">Assessment</button>
+          <button class="nav-link" type="button" data-view="path">My Path</button>
+          <button class="nav-link" type="button" data-view="catalog">Training Catalog</button>
+          <button class="nav-link" type="button" data-view="progress">Progress</button>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content" class="app-shell" tabindex="-1">
+      <section class="warning-panel" aria-labelledby="warning-title">
+        <div class="warning-icon" aria-hidden="true">!</div>
+        <div>
+          <h2 id="warning-title">Do not enter sensitive information</h2>
+          <p>
+            Do not enter classified, controlled, operationally sensitive, medical, personally
+            identifiable, proprietary, credential, or other protected information. This MVP is
+            for nonsensitive training-path planning only.
+          </p>
+        </div>
+      </section>
+
+      <section class="status-panel" aria-live="polite" aria-atomic="true" hidden>
+        <p id="app-status"></p>
+      </section>
+
+      <section class="view-panel" data-view-panel="home" aria-labelledby="home-title">
+        <div class="intro-grid">
+          <div class="intro-copy">
+            <p class="eyebrow">Phase 1 shell</p>
+            <h2 id="home-title">Find a safer starting point for AI training.</h2>
+            <p>
+              This pilot shell will guide users toward free AI training based on their field,
+              work patterns, practical AI fluency, technical orientation, goals, and available
+              time. Assessment scoring and recommendations are intentionally deferred.
+            </p>
+            <div class="action-row">
+              <button class="primary-action" type="button" data-start-guest>
+                Continue as guest
+              </button>
+              <button class="secondary-action" type="button" data-view-target="catalog">
+                View sample catalog
+              </button>
+            </div>
+            <p class="helper-text">
+              Guest mode stores future progress only in this browser. Account sync is deferred
+              until Phase 5.
+            </p>
+          </div>
+
+          <div class="path-preview" aria-labelledby="path-preview-title">
+            <h3 id="path-preview-title">Required learning path stages</h3>
+            <ol>
+              <li>AI foundation</li>
+              <li>Responsible use and output evaluation</li>
+              <li>Role-aligned application</li>
+              <li>Hands-on practice</li>
+              <li>Optional deeper learning</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="view-panel" data-view-panel="assessment" aria-labelledby="assessment-title" hidden>
+        <div class="section-heading">
+          <p class="eyebrow">Placeholder</p>
+          <h2 id="assessment-title">Assessment</h2>
+          <p>
+            Phase 2 will add a short behavior- and scenario-based assessment. For Phase 1,
+            this view confirms the navigation and shell are ready.
+          </p>
+        </div>
+        <div class="placeholder-grid" id="assessment-config-summary"></div>
+      </section>
+
+      <section class="view-panel" data-view-panel="path" aria-labelledby="path-title" hidden>
+        <div class="section-heading">
+          <p class="eyebrow">Placeholder</p>
+          <h2 id="path-title">My Path</h2>
+          <p>
+            Personalized path generation begins in Phase 3 after assessment scoring exists.
+            No recommendation scoring is implemented in Phase 1.
+          </p>
+        </div>
+        <div class="stage-list" id="path-stage-list"></div>
+      </section>
+
+      <section class="view-panel" data-view-panel="catalog" aria-labelledby="catalog-title" hidden>
+        <div class="section-heading">
+          <p class="eyebrow">Sample data only</p>
+          <h2 id="catalog-title">Training Catalog</h2>
+          <p>
+            These records are unmistakably labeled unverified placeholders. They are not
+            production training recommendations.
+          </p>
+        </div>
+        <div class="catalog-list" id="catalog-list"></div>
+      </section>
+
+      <section class="view-panel" data-view-panel="progress" aria-labelledby="progress-title" hidden>
+        <div class="section-heading">
+          <p class="eyebrow">Placeholder</p>
+          <h2 id="progress-title">Progress</h2>
+          <p>
+            Full progress tracking, milestones, completion attestation, and achievements are
+            deferred until Phase 4. The storage foundation is active now.
+          </p>
+        </div>
+        <dl class="state-summary">
+          <div>
+            <dt>Current storage mode</dt>
+            <dd id="storage-mode">Guest</dd>
+          </div>
+          <div>
+            <dt>Guest session started</dt>
+            <dd id="guest-started">Not started</dd>
+          </div>
+          <div>
+            <dt>Storage health</dt>
+            <dd id="storage-health">Checking...</dd>
+          </div>
+        </dl>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Phase 1 static shell. Milestones measure engagement only and do not represent
+        certification, authorization, mission readiness, or validated job proficiency.
+      </p>
+    </footer>
+  </body>
+</html>
