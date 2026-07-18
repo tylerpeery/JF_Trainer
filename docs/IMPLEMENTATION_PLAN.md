@@ -5,7 +5,7 @@
 ## Current Phase Status
 
 - Phase 1: Complete
-- Phase 2: Complete
+- Phase 2: Complete, repaired against the Joint Force assessment requirements
 - Phase 3: Not started
 - Phase 4: Not started
 - Phase 5: Not started
@@ -20,11 +20,11 @@ Phase 3 and later work must not begin without a separate instruction.
 - `README.md` is public overview documentation and is not authoritative.
 - Supabase is deferred until Phase 5.
 - Phase 1 sample catalog records are unverified placeholders and are not production training data.
-- Account mode, guest transfer, scoring, and full progress features are intentionally deferred.
+- Account mode, guest transfer, recommendation scoring, and full progress features are intentionally deferred.
 
 ## Phase 1: Static App Shell And Safety Baseline
 
-Status: Complete
+Status: Complete, repaired against the Joint Force assessment requirements
 
 Scope:
 
@@ -69,14 +69,27 @@ Scope:
 - Calculate practical AI fluency and technical orientation separately.
 - Capture whether the result seems accurate.
 - Save the guest assessment result and profile-accuracy feedback in the existing localStorage foundation.
+- Use pure validation logic for required answers, selection limits, unknown option IDs, and contradictory selections.
+- Apply configurable scoring weights plus explicit eligibility gates.
+- Display plain-language evidence explanations without exposing raw scores in the normal interface.
+- Safely discard incompatible old Phase 2 assessment results without clearing unrelated guest data.
 
 Acceptance criteria:
 
 - Assessment completes in one flow.
 - Results include separate fluency and technical-orientation dimensions.
 - Selection limits are enforced.
+- Primary field cannot also be selected as a secondary field.
+- Learning goals are limited to one to three selections.
+- `None yet` and `No preference` are enforced as mutually exclusive choices.
 - No required free text is introduced.
 - Phase 1 safety warning remains visible or readily available.
+- Technical orientation cannot be inflated by governance, supervision, output verification, responsible information handling, or use frequency alone.
+- Practical fluency cannot be inflated to Applied user or Advanced practitioner by frequency, coding, or hypothetical scenario answers alone.
+- Results include meaningful evidence explanations for both dimensions.
+- Saved answers and profile-accuracy feedback are restored when the assessment is revisited.
+- Incompatible old assessment data is handled safely.
+- `node --test` passes.
 - No recommendation scoring or catalog matching is implemented.
 
 Dependencies:

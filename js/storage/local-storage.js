@@ -1,5 +1,6 @@
 const STORAGE_KEY = "ai-training-pathfinder:guest-state:v1";
 const CURRENT_VERSION = 1;
+export const SUPPORTED_ASSESSMENT_VERSION = "phase-2-joint-force-v2";
 
 function createDefaultState() {
   return {
@@ -20,21 +21,54 @@ function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
+function normalizeAssessment(value) {
+  if (!isObject(value)) {
+    return null;
+  }
+
+  if (value.assessmentVersion !== SUPPORTED_ASSESSMENT_VERSION) {
+    return null;
+  }
+
+  if (
+    !isObject(value.practicalFluency) ||
+    !isObject(value.technicalOrientation) ||
+    !Array.isArray(value.practicalFluency.evidence) ||
+    !Array.isArray(value.technicalOrientation.evidence) ||
+    !isObject(value.answers)
+  ) {
+    return null;
+  }
+
+  return {
+    ...value,
+    selections: isObject(value.selections) ? value.selections : {},
+    accuracyFeedback: isObject(value.accuracyFeedback) ? value.accuracyFeedback : null
+  };
+}
+
 function normalizeState(value) {
   const defaultState = createDefaultState();
 
   if (!isObject(value) || value.version !== CURRENT_VERSION) {
-    return defaultState;
+    return { state: defaultState, discardedAssessment: false };
   }
 
+  const assessment = normalizeAssessment(value.assessment);
+  const discardedAssessment = Boolean(value.assessment && !assessment);
+
   return {
-    ...defaultState,
-    ...value,
-    progress: {
-      ...defaultState.progress,
-      ...(isObject(value.progress) ? value.progress : {})
+    state: {
+      ...defaultState,
+      ...value,
+      assessment,
+      progress: {
+        ...defaultState.progress,
+        ...(isObject(value.progress) ? value.progress : {})
+      },
+      achievements: Array.isArray(value.achievements) ? value.achievements : []
     },
-    achievements: Array.isArray(value.achievements) ? value.achievements : []
+    discardedAssessment
   };
 }
 
@@ -54,7 +88,13 @@ export function createLocalStorageAdapter(storage = globalThis.localStorage) {
     }
 
     try {
-      return { state: normalizeState(JSON.parse(storedValue)), recoverableError: null };
+      const normalized = normalizeState(JSON.parse(storedValue));
+      return {
+        state: normalized.state,
+        recoverableError: normalized.discardedAssessment
+          ? "Saved assessment data uses an older or incompatible format. Please retake the assessment."
+          : null
+      };
     } catch (error) {
       return {
         state: createDefaultState(),
@@ -72,7 +112,7 @@ export function createLocalStorageAdapter(storage = globalThis.localStorage) {
     }
 
     const nextState = {
-      ...normalizeState(state),
+      ...normalizeState(state).state,
       updatedAt: new Date().toISOString()
     };
 

@@ -13,12 +13,36 @@
     "Other"
   ],
   "workPatterns": [
-    "Analyze information",
-    "Create and communicate",
-    "Plan and decide",
-    "Build and automate",
-    "Sustain and optimize",
-    "Lead and govern"
+    {
+      "id": "analyze-information",
+      "label": "Analyze information",
+      "description": "Research, compare sources, identify patterns, summarize evidence, and produce assessments."
+    },
+    {
+      "id": "create-communicate",
+      "label": "Create and communicate",
+      "description": "Draft reports, presentations, instructions, correspondence, educational material, or other products."
+    },
+    {
+      "id": "plan-decide",
+      "label": "Plan and decide",
+      "description": "Develop options, identify assumptions, evaluate tradeoffs, plan activities, and support decisions."
+    },
+    {
+      "id": "build-automate",
+      "label": "Build and automate",
+      "description": "Write code, query or manipulate data, automate workflows, and develop technical systems."
+    },
+    {
+      "id": "sustain-optimize",
+      "label": "Sustain and optimize",
+      "description": "Troubleshoot equipment or processes, forecast requirements, improve workflows, and support maintenance or logistics."
+    },
+    {
+      "id": "lead-govern",
+      "label": "Lead and govern",
+      "description": "Supervise personnel, review AI-assisted products, approve decisions, establish policy, manage risk, and assign accountability."
+    }
   ],
   "practicalFluencyLevels": [
     {
@@ -67,7 +91,10 @@
   "selectionRules": {
     "primaryFieldsRequired": 1,
     "secondaryFieldsMaximum": 2,
-    "workPatternsMaximum": 3
+    "workPatternsMinimum": 1,
+    "workPatternsMaximum": 3,
+    "learningGoalsMinimum": 1,
+    "learningGoalsMaximum": 3
   },
   "learningPathStages": [
     "AI foundation",

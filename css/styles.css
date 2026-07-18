@@ -45,6 +45,8 @@ button {
 
 button:focus-visible,
 a:focus-visible,
+input:focus-visible,
+select:focus-visible,
 [tabindex]:focus-visible {
   outline: none;
   box-shadow: var(--focus);
@@ -378,6 +380,15 @@ a:focus-visible,
   flex: 0 0 auto;
 }
 
+.option-text {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.option-text small {
+  color: var(--color-muted);
+}
+
 .option-row:has(input:checked) {
   border-color: var(--color-primary);
   background: #eef5f7;
@@ -393,6 +404,15 @@ a:focus-visible,
 .form-errors {
   color: var(--color-error);
   font-weight: 700;
+}
+
+.handling-reminder {
+  margin: 0.75rem 0 0;
+  padding: 0.65rem;
+  border: 1px solid #e7c56c;
+  border-radius: var(--radius);
+  background: var(--color-accent-soft);
+  color: #61460f;
 }
 
 .assessment-actions,
@@ -414,9 +434,14 @@ a:focus-visible,
   color: var(--color-primary-strong);
 }
 
-.result-card .score {
-  margin: 0.45rem 0 0;
-  color: var(--color-muted);
+.evidence-list {
+  margin: 0.75rem 0 0;
+  padding-left: 1.2rem;
+  color: var(--color-text);
+}
+
+.evidence-list li {
+  margin: 0.35rem 0;
 }
 
 .profile-summary {

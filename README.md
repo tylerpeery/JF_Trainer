@@ -6,7 +6,7 @@ Users will complete a short assessment, receive an explainable learning path, fo
 
 ## Project Status
 
-This project is implemented through Phase 2: Assessment and Profile Scoring. Phase 2 includes the static application shell, safety warning, configuration data, sample-only catalog records, storage foundation, assessment flow, profile scoring, and profile-accuracy feedback.
+This project is implemented through the repaired Phase 2: Assessment and Profile Scoring. Phase 2 includes the static application shell, safety warning, configuration data, sample-only catalog records, storage foundation, Joint Force-oriented assessment flow, profile scoring with evidence explanations, validation, tests, and profile-accuracy feedback.
 
 It is intended for a small pilot group of approximately 3 to 12 testers. It is not intended for large-scale deployment, enterprise use, official certification, or operational-readiness determinations.
 
@@ -50,7 +50,7 @@ The MVP does not use React, Vite, TypeScript, a custom application server, or an
 
 ## Project Structure
 
-The Phase 1 structure is:
+The current static project structure is:
 
 ```text
 ai-training-pathfinder/
@@ -62,18 +62,24 @@ ai-training-pathfinder/
 |-- data/
 |   |-- achievements.json
 |   |-- app-config.json
+|   |-- assessment-questions.json
 |   |-- milestones.json
 |   `-- training-resources.json
 |-- docs/
 |   |-- IMPLEMENTATION_PLAN.md
 |   `-- PRODUCT_SPEC.md
-`-- js/
-    |-- app.js
-    |-- catalog.js
-    |-- configuration.js
-    `-- storage/
-        |-- local-storage.js
-        `-- storage-manager.js
+|-- package.json
+|-- js/
+|   |-- app.js
+|   |-- assessment.js
+|   |-- assessment-validation.js
+|   |-- catalog.js
+|   |-- configuration.js
+|   `-- storage/
+|       |-- local-storage.js
+|       `-- storage-manager.js
+`-- tests/
+    `-- phase2-assessment.test.js
 ```
 
 ## Running Locally
@@ -93,6 +99,14 @@ http://localhost:8000
 ```
 
 Another option is the Live Server extension for Visual Studio Code.
+
+## Running Tests
+
+Phase 2 uses Node's built-in test runner with no external test dependency:
+
+```bash
+node --test
+```
 
 ## GitHub Pages Deployment
 
@@ -124,12 +138,14 @@ Implemented through Phase 2:
 - Responsive static app shell
 - Landing page
 - Assessment flow
+- Pure assessment validation
 - Placeholder views for My Path, Training Catalog, and Progress
 - Information-handling warning
 - Accessible guest/demo entry point
 - Configuration JSON
 - localStorage adapter foundation
 - Separate practical AI fluency and technical-orientation scoring
+- Plain-language result evidence without showing raw numeric scores in the normal interface
 - Profile accuracy feedback
 - Unverified sample catalog records clearly labeled as sample data
 

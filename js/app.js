@@ -1,6 +1,7 @@
 import { loadCatalog } from "./catalog.js";
 import { loadConfiguration } from "./configuration.js";
 import { calculateProfile } from "./assessment.js";
+import { validateAssessmentAnswers } from "./assessment-validation.js";
 import { createStorageManager } from "./storage/storage-manager.js";
 
 const panels = Array.from(document.querySelectorAll("[data-view-panel]"));
@@ -73,7 +74,7 @@ function createCard(title, body, items = []) {
   return card;
 }
 
-function createOptionInput({ type, name, value, label, checked = false }) {
+function createOptionInput({ type, name, value, label, description = "", checked = false }) {
   const optionId = `${name}-${String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
   const wrapper = document.createElement("label");
   wrapper.className = "option-row";
@@ -87,7 +88,17 @@ function createOptionInput({ type, name, value, label, checked = false }) {
   input.checked = checked;
 
   const text = document.createElement("span");
-  text.textContent = label;
+  text.className = "option-text";
+
+  const labelText = document.createElement("span");
+  labelText.textContent = label;
+  text.append(labelText);
+
+  if (description) {
+    const descriptionText = document.createElement("small");
+    descriptionText.textContent = description;
+    text.append(descriptionText);
+  }
 
   wrapper.append(input, text);
   return wrapper;
@@ -120,7 +131,16 @@ function createCheckboxGroup({ title, description, name, options, required = fal
   options.forEach((option) => {
     const label = typeof option === "string" ? option : option.label;
     const value = typeof option === "string" ? option : option.id;
-    optionStack.append(createOptionInput({ type: "checkbox", name, value, label }));
+    const optionDescription = typeof option === "string" ? "" : option.description || "";
+    optionStack.append(
+      createOptionInput({
+        type: "checkbox",
+        name,
+        value,
+        label,
+        description: optionDescription
+      })
+    );
   });
 
   const note = document.createElement("p");
@@ -134,7 +154,7 @@ function createCheckboxGroup({ title, description, name, options, required = fal
   return fieldset;
 }
 
-function createCompactChoiceGroup({ title, name, options, type = "checkbox" }) {
+function createCompactChoiceGroup({ title, description = "", name, options, type = "checkbox", max = null }) {
   const wrapper = document.createElement("div");
   wrapper.className = "choice-subsection";
 
@@ -142,16 +162,32 @@ function createCompactChoiceGroup({ title, name, options, type = "checkbox" }) {
   heading.textContent = title;
   wrapper.append(heading);
 
+  if (description) {
+    const helper = document.createElement("p");
+    helper.className = "selection-note";
+    helper.textContent = description;
+    wrapper.append(helper);
+  }
+
   const optionStack = document.createElement("div");
   optionStack.className = "option-stack";
 
   options.forEach((option) => {
     const label = typeof option === "string" ? option : option.label;
     const value = typeof option === "string" ? option : option.id;
-    optionStack.append(createOptionInput({ type, name, value, label }));
+    const optionDescription = typeof option === "string" ? "" : option.description || "";
+    optionStack.append(createOptionInput({ type, name, value, label, description: optionDescription }));
   });
 
   wrapper.append(optionStack);
+
+  if (max) {
+    const note = document.createElement("p");
+    note.className = "selection-note";
+    note.textContent = `Select up to ${max}.`;
+    wrapper.append(note);
+  }
+
   return wrapper;
 }
 
@@ -166,12 +202,20 @@ function createRadioGroup(question) {
         type: "radio",
         name: question.id,
         value: option.id,
-        label: option.label
+        label: option.label,
+        description: option.description || ""
       })
     );
   });
 
   fieldset.dataset.requiredGroup = question.required ? question.id : "";
+  if (question.reminder) {
+    const reminder = document.createElement("p");
+    reminder.className = "handling-reminder";
+    reminder.textContent = question.reminder;
+    fieldset.append(reminder);
+  }
+
   fieldset.append(optionStack);
   return fieldset;
 }
@@ -186,12 +230,86 @@ function bindSelectionLimit(form, name, max) {
     const selectedCount = checkboxes.filter((checkbox) => checkbox.checked).length;
 
     checkboxes.forEach((checkbox) => {
-      checkbox.disabled = !checkbox.checked && selectedCount >= max;
+      checkbox.disabled = checkbox.dataset.lockedByPrimary === "true" || (!checkbox.checked && selectedCount >= max);
     });
   };
 
   checkboxes.forEach((checkbox) => checkbox.addEventListener("change", update));
   update();
+}
+
+function bindExclusiveOption(form, name, exclusiveValue) {
+  const checkboxes = Array.from(form.querySelectorAll(`[name="${name}"]`));
+  const exclusive = checkboxes.find((checkbox) => checkbox.value === exclusiveValue);
+
+  if (!exclusive) {
+    return;
+  }
+
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      if (checkbox === exclusive && checkbox.checked) {
+        checkboxes
+          .filter((other) => other !== exclusive)
+          .forEach((other) => {
+            other.checked = false;
+          });
+      }
+
+      if (checkbox !== exclusive && checkbox.checked) {
+        exclusive.checked = false;
+      }
+    });
+  });
+}
+
+function bindPrimarySecondaryExclusion(form, secondaryMaximum) {
+  const primarySelect = form.elements.primaryField;
+  const secondaryCheckboxes = Array.from(form.querySelectorAll('[name="secondaryFields"]'));
+
+  const update = () => {
+    const selectedCount = secondaryCheckboxes.filter((checkbox) => {
+      return checkbox.checked && checkbox.value !== primarySelect.value;
+    }).length;
+
+    secondaryCheckboxes.forEach((checkbox) => {
+      const duplicatesPrimary = checkbox.value === primarySelect.value;
+      checkbox.checked = duplicatesPrimary ? false : checkbox.checked;
+      checkbox.dataset.lockedByPrimary = duplicatesPrimary ? "true" : "false";
+      checkbox.disabled = duplicatesPrimary || (!checkbox.checked && selectedCount >= secondaryMaximum);
+    });
+  };
+
+  primarySelect.addEventListener("change", update);
+  update();
+}
+
+function populateAssessmentForm(form, answers = {}) {
+  Object.entries(answers).forEach(([name, value]) => {
+    if (Array.isArray(value)) {
+      form.querySelectorAll(`[name="${name}"]`).forEach((input) => {
+        input.checked = value.includes(input.value);
+      });
+      return;
+    }
+
+    const field = form.elements[name];
+
+    if (!field) {
+      return;
+    }
+
+    if (field instanceof RadioNodeList) {
+      field.value = value || "";
+      return;
+    }
+
+    field.value = value || "";
+  });
+
+  form.querySelectorAll("input, select").forEach((input) => {
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  });
 }
 
 function readAssessmentAnswers(form) {
@@ -200,67 +318,17 @@ function readAssessmentAnswers(form) {
     secondaryFields: selectedValues(form, "secondaryFields"),
     workPatterns: selectedValues(form, "workPatterns"),
     genAiFrequency: form.elements.genAiFrequency.value,
-    completedActivities: selectedValues(form, "completedActivities"),
+    independentExperience: selectedValues(form, "independentExperience"),
     verifyOutput: form.elements.verifyOutput.value,
-    promptBreakdown: form.elements.promptBreakdown.value,
+    promptWorkflow: form.elements.promptWorkflow.value,
     responsibleHandling: form.elements.responsibleHandling.value,
     limitations: form.elements.limitations.value,
     technicalExperience: form.elements.technicalExperience.value,
-    aiResponsibilities: selectedValues(form, "aiResponsibilities"),
+    aiResponsibility: form.elements.aiResponsibility.value,
     learningGoals: selectedValues(form, "learningGoals"),
     weeklyTime: form.elements.weeklyTime.value,
     preferredFormats: selectedValues(form, "preferredFormats")
   };
-}
-
-function validateAssessmentAnswers(answers, appConfig) {
-  const errors = [];
-  const requiredSingleAnswers = [
-    ["primaryField", "Choose one primary professional field."],
-    ["genAiFrequency", "Answer the recent AI use question."],
-    ["verifyOutput", "Answer the output verification question."],
-    ["promptBreakdown", "Answer the prompt improvement question."],
-    ["responsibleHandling", "Answer the responsible handling question."],
-    ["limitations", "Answer the limitations question."],
-    ["technicalExperience", "Answer the technical background question."],
-    ["weeklyTime", "Choose your weekly available time."]
-  ];
-
-  requiredSingleAnswers.forEach(([key, message]) => {
-    if (!answers[key]) {
-      errors.push(message);
-    }
-  });
-
-  if (answers.secondaryFields.length > appConfig.selectionRules.secondaryFieldsMaximum) {
-    errors.push(`Choose no more than ${appConfig.selectionRules.secondaryFieldsMaximum} secondary fields.`);
-  }
-
-  if (answers.workPatterns.length === 0) {
-    errors.push("Choose at least one work pattern.");
-  }
-
-  if (answers.workPatterns.length > appConfig.selectionRules.workPatternsMaximum) {
-    errors.push(`Choose no more than ${appConfig.selectionRules.workPatternsMaximum} work patterns.`);
-  }
-
-  if (answers.completedActivities.length === 0) {
-    errors.push("Choose at least one completed activity option.");
-  }
-
-  if (answers.aiResponsibilities.length === 0) {
-    errors.push("Choose at least one AI responsibility option.");
-  }
-
-  if (answers.learningGoals.length === 0) {
-    errors.push("Choose at least one learning goal.");
-  }
-
-  if (answers.preferredFormats.length === 0) {
-    errors.push("Choose at least one preferred format.");
-  }
-
-  return errors;
 }
 
 function renderAssessmentResult(result, accuracyOptions) {
@@ -272,13 +340,13 @@ function renderAssessmentResult(result, accuracyOptions) {
       "Practical AI fluency",
       result.practicalFluency.level.label,
       result.practicalFluency.level.description,
-      result.practicalFluency.score
+      result.practicalFluency.evidence
     ),
     createResultCard(
       "Technical orientation",
       result.technicalOrientation.level.label,
       result.technicalOrientation.level.description,
-      result.technicalOrientation.score
+      result.technicalOrientation.evidence
     )
   );
 
@@ -288,7 +356,7 @@ function renderAssessmentResult(result, accuracyOptions) {
   renderStorageState();
 }
 
-function createResultCard(title, level, description, score) {
+function createResultCard(title, level, description, evidence = []) {
   const card = document.createElement("article");
   card.className = "result-card";
 
@@ -298,24 +366,45 @@ function createResultCard(title, level, description, score) {
   levelText.textContent = level;
   const descriptionText = document.createElement("p");
   descriptionText.textContent = description || "";
-  const scoreText = document.createElement("p");
-  scoreText.className = "score";
-  scoreText.textContent = `Internal assessment score: ${score}`;
 
-  card.append(heading, levelText, descriptionText, scoreText);
+  const evidenceList = document.createElement("ul");
+  evidenceList.className = "evidence-list";
+
+  evidence.forEach((item) => {
+    const listItem = document.createElement("li");
+    listItem.textContent = item;
+    evidenceList.append(listItem);
+  });
+
+  card.append(heading, levelText, descriptionText);
+
+  if (evidence.length > 0) {
+    card.append(evidenceList);
+  }
+
   return card;
 }
 
 function renderAccuracyControls(resultPanel, accuracyOptions) {
   const container = resultPanel.querySelector("#accuracy-feedback");
   container.replaceChildren();
+  const { state } = storageManager.getSnapshot();
+  const savedFeedbackValue = state.assessment?.accuracyFeedback?.value || "";
 
   const fieldset = createFieldset("Does this profile seem accurate?");
   const stack = document.createElement("div");
   stack.className = "option-stack";
 
   accuracyOptions.forEach((option) => {
-    stack.append(createOptionInput({ type: "radio", name: "accuracyFeedback", value: option.id, label: option.label }));
+    stack.append(
+      createOptionInput({
+        type: "radio",
+        name: "accuracyFeedback",
+        value: option.id,
+        label: option.label,
+        checked: option.id === savedFeedbackValue
+      })
+    );
   });
 
   const actionRow = document.createElement("div");
@@ -356,9 +445,13 @@ function renderAssessment(appConfig, assessmentConfig) {
   errorBox.className = "form-errors";
   errorBox.id = "assessment-errors";
   errorBox.setAttribute("aria-live", "polite");
+  errorBox.tabIndex = -1;
   errorBox.hidden = true;
 
-  const primaryFieldset = createFieldset("1. Select your primary professional field.");
+  const primaryFieldset = createFieldset(
+    "1. Which professional field best describes your primary work?",
+    "Choose one primary field and up to two optional secondary fields."
+  );
   const primarySelect = document.createElement("select");
   primarySelect.name = "primaryField";
   primarySelect.id = "primaryField";
@@ -380,24 +473,35 @@ function renderAssessment(appConfig, assessmentConfig) {
   primaryLabel.className = "selection-note";
   primaryLabel.setAttribute("for", "primaryField");
   primaryLabel.textContent = "Primary field";
-  primaryFieldset.append(primaryLabel, primarySelect);
-
-  form.append(
-    primaryFieldset,
-    createCheckboxGroup({
-      title: "2. Select up to two secondary professional fields.",
+  primaryFieldset.append(
+    primaryLabel,
+    primarySelect,
+    createCompactChoiceGroup({
+      title: "Optional secondary fields",
       description: "Leave this blank if no secondary field applies.",
       name: "secondaryFields",
       options: appConfig.professionalFields,
       max: appConfig.selectionRules.secondaryFieldsMaximum
-    }),
+    })
+  );
+
+  form.append(
+    primaryFieldset,
     createCheckboxGroup({
-      title: "3. Select up to three work patterns.",
-      description: "Choose the kinds of work you do most often.",
+      title: "2. Which activities best describe your work?",
+      description: "Choose one to three work patterns. Professional field and work pattern are kept separate.",
       name: "workPatterns",
       options: appConfig.workPatterns,
       required: true,
       max: appConfig.selectionRules.workPatternsMaximum
+    }),
+    createCheckboxGroup({
+      title: "3. What do you most want to learn?",
+      description: "Choose one to three learning goals.",
+      name: "learningGoals",
+      options: assessmentConfig.learningGoals,
+      required: true,
+      max: appConfig.selectionRules.learningGoalsMaximum
     })
   );
 
@@ -419,15 +523,8 @@ function renderAssessment(appConfig, assessmentConfig) {
     }
   });
 
-  const preferencesFieldset = createFieldset(
-    "12. Select your learning goals, available time, and preferred formats."
-  );
+  const preferencesFieldset = createFieldset("12. Select your available time and preferred formats.");
   preferencesFieldset.append(
-    createCompactChoiceGroup({
-      title: "Learning goals",
-      name: "learningGoals",
-      options: assessmentConfig.learningGoals
-    }),
     createCompactChoiceGroup({
       title: "Weekly available training time",
       name: "weeklyTime",
@@ -469,7 +566,7 @@ function renderAssessment(appConfig, assessmentConfig) {
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const answers = readAssessmentAnswers(form);
-    const errors = validateAssessmentAnswers(answers, appConfig);
+    const errors = validateAssessmentAnswers(answers, appConfig, assessmentConfig);
 
     if (errors.length > 0) {
       errorBox.hidden = false;
@@ -492,11 +589,16 @@ function renderAssessment(appConfig, assessmentConfig) {
   });
 
   root.replaceChildren(form, resultPanel);
+  bindPrimarySecondaryExclusion(form, appConfig.selectionRules.secondaryFieldsMaximum);
   bindSelectionLimit(form, "secondaryFields", appConfig.selectionRules.secondaryFieldsMaximum);
   bindSelectionLimit(form, "workPatterns", appConfig.selectionRules.workPatternsMaximum);
+  bindSelectionLimit(form, "learningGoals", appConfig.selectionRules.learningGoalsMaximum);
+  bindExclusiveOption(form, "independentExperience", "none-yet");
+  bindExclusiveOption(form, "preferredFormats", "no-preference");
 
   const { state } = storageManager.getSnapshot();
   if (state.assessment) {
+    populateAssessmentForm(form, state.assessment.answers);
     renderAssessmentResult(state.assessment, assessmentConfig.accuracyOptions);
   }
 }
@@ -584,28 +686,19 @@ function renderPathProfileSummary(result = null) {
       "Practical AI fluency",
       assessment.practicalFluency.level.label,
       assessment.practicalFluency.level.description,
-      assessment.practicalFluency.score
+      assessment.practicalFluency.evidence || []
     ),
     createResultCard(
       "Technical orientation",
       assessment.technicalOrientation.level.label,
       assessment.technicalOrientation.level.description,
-      assessment.technicalOrientation.score
+      assessment.technicalOrientation.evidence || []
     )
   );
   container.className = "assessment-results";
 }
 
 function bindNavigation() {
-  function bindKeyboardActivation(button, action) {
-    button.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        action();
-      }
-    });
-  }
-
   navButtons.forEach((button) => {
     const activate = () => {
       setView(button.dataset.view, { focusMain: true });
@@ -613,7 +706,6 @@ function bindNavigation() {
     };
 
     button.addEventListener("click", activate);
-    bindKeyboardActivation(button, activate);
   });
 
   document.querySelectorAll("[data-view-target]").forEach((button) => {
@@ -623,7 +715,6 @@ function bindNavigation() {
     };
 
     button.addEventListener("click", activate);
-    bindKeyboardActivation(button, activate);
   });
 
   const guestButton = document.querySelector("[data-start-guest]");
@@ -638,7 +729,6 @@ function bindNavigation() {
   };
 
   guestButton.addEventListener("click", startGuest);
-  bindKeyboardActivation(guestButton, startGuest);
 }
 
 async function init() {

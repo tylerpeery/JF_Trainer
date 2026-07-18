@@ -10,6 +10,300 @@ The MVP is a small demonstration pilot for approximately 3 to 12 testers. It is 
 
 Users must be warned not to enter classified, controlled, operationally sensitive, medical, personally identifiable, proprietary, credential, or other sensitive information.
 
+## Joint Force Design Context
+
+AI Training Pathfinder is intended to demonstrate how personnel across a diverse Joint Force could receive AI education tailored to their roles, responsibilities, existing expertise, and anticipated uses of AI.
+
+The MVP may be publicly accessible and should use broadly understandable terminology, but its design must account for the range of military, civilian, technical, operational, analytical, medical, educational, acquisition, maintenance, administrative, and leadership roles found across the Joint Force.
+
+The tool must not request:
+
+- Military service
+- Rank or grade
+- Unit or organization
+- Duty location
+- Clearance level
+- Weapon system
+- Mission assignment
+- Operational details
+- Classified information
+- Controlled unclassified information
+- Personally identifiable information
+
+The assessment should tailor learning based on professional activities and responsibilities rather than rank, status, or organizational affiliation.
+
+All scenarios and applied exercises must use fictional, nonsensitive information.
+
+## Joint Force Professional Fields
+
+Users select one primary professional field and may select up to two secondary fields:
+
+1. Intelligence, research, and analysis
+2. Operations and mission planning
+3. Maintenance and logistics
+4. Acquisition and program management
+5. Cybersecurity and information technology
+6. Software development, data, and AI
+7. Healthcare
+8. Education, training, and communication
+9. Leadership, policy, and governance
+10. Administration and general support
+11. Other
+
+These fields should remain configurable.
+
+## Joint Force Work Patterns
+
+Users select up to three work patterns:
+
+1. Analyze information: research, compare sources, identify patterns, summarize evidence, and produce assessments.
+2. Create and communicate: draft reports, presentations, instructions, correspondence, educational material, or other products.
+3. Plan and decide: develop options, identify assumptions, evaluate tradeoffs, plan activities, and support decisions.
+4. Build and automate: write code, query or manipulate data, automate workflows, and develop technical systems.
+5. Sustain and optimize: troubleshoot equipment or processes, forecast requirements, improve workflows, and support maintenance or logistics.
+6. Lead and govern: supervise personnel, review AI-assisted products, approve decisions, establish policy, manage risk, and assign accountability.
+
+Professional field and work pattern must remain separate. A user's job field alone does not determine the appropriate training path.
+
+## Joint Force Expertise Model
+
+Do not place all users on a single expertise ladder.
+
+Calculate two separate dimensions:
+
+Practical AI fluency:
+
+- New to AI
+- Foundational user
+- Applied user
+- Advanced practitioner
+
+Technical orientation:
+
+- General user
+- Productivity and low-code user
+- Developer or data practitioner
+- AI/ML builder
+
+Technical coding ability must not automatically produce a high practical-fluency rating. Leadership, governance, output evaluation, and responsible-use capabilities must also be recognized.
+
+Rank, seniority, age, and years of service must not be used as proxies for AI expertise.
+
+## Required Assessment Design
+
+The assessment should contain approximately 10 to 12 questions and take approximately three to five minutes.
+
+Questions should rely primarily on behavior, experience, and scenarios rather than asking users to rate themselves as beginner, intermediate, or expert.
+
+### Question 1: Primary Professional Field
+
+Which professional field best describes your primary work?
+
+Use the approved professional-field list.
+
+Allow one primary selection and up to two optional secondary selections.
+
+### Question 2: Work Patterns
+
+Which activities best describe your work?
+
+Allow up to three selections from the approved work-pattern list.
+
+### Question 3: Learning Goals
+
+What do you most want to learn?
+
+Allow up to three selections:
+
+- Understand AI terminology and capabilities
+- Use generative AI for everyday productivity
+- Improve research and analysis
+- Improve writing and communication
+- Work with data
+- Automate repetitive tasks
+- Evaluate AI outputs and reduce errors
+- Understand responsible use, policy, and risk
+- Supervise AI-assisted work
+- Build AI-enabled applications
+- Understand machine learning
+- Teach others to use AI
+
+### Question 4: Recent Use
+
+How often have you used a generative-AI tool during the past 30 days?
+
+- Never
+- Once or twice
+- Several times
+- Weekly
+- Several times per week
+- Daily
+
+This measures exposure and use frequency, not proficiency by itself.
+
+### Question 5: Independent Experience
+
+Which of the following have you done independently?
+
+Allow multiple selections:
+
+- Asked an AI tool a simple question
+- Revised a prompt after receiving a poor result
+- Supplied context, examples, or source material
+- Compared AI output against authoritative sources
+- Created a reusable prompt or template
+- Used AI as one step in a repeatable workflow
+- Used an AI API, coding assistant, or automation tool
+- Built or evaluated an AI or machine-learning system
+
+Weight advanced behaviors more heavily than basic tool access.
+
+### Question 6: Output Verification Scenario
+
+An AI system produces a convincing answer for an important work product. What would you normally do?
+
+- Use it because it appears reasonable
+- Read it for obvious errors
+- Independently verify important claims
+- Verify claims, inspect available sources, document uncertainty, and determine what requires human judgment
+
+The strongest response demonstrates verification proportional to the consequences of the task.
+
+### Question 7: Prompt and Workflow Scenario
+
+An AI response is incomplete or inaccurate. What are you most likely to do next?
+
+- Stop using the tool
+- Ask the same question again
+- Rewrite the question with more detail
+- Add context, constraints, examples, and a requested output format
+- Break the task into smaller steps and test each step separately
+
+This question should distinguish basic prompting from structured workflow design.
+
+### Question 8: Responsible Information Handling
+
+Before entering work-related information into an AI system, which best describes your approach?
+
+- I generally enter whatever information is needed
+- I avoid obviously personal or sensitive information
+- I determine whether the tool is approved and minimize the information entered
+- I consider tool approval, classification or sensitivity, retention, access, downstream use, and required human review
+
+Display a reminder that users must not provide actual sensitive examples when answering.
+
+### Question 9: Understanding AI Limitations
+
+Present a scenario-based question testing whether the user understands that generative-AI systems:
+
+- Generate outputs from learned patterns
+- Can produce plausible but incorrect information
+- May omit context or reflect bias
+- Require verification appropriate to the task and consequences
+
+Do not phrase this only as a self-assessment such as "How well do you understand hallucinations?"
+
+### Question 10: Technical Experience
+
+Which best describes your technical experience?
+
+- I primarily use ordinary workplace software
+- I use advanced spreadsheets, formulas, or low-code tools
+- I write scripts or query data
+- I develop software or use APIs
+- I build, train, deploy, or evaluate AI or machine-learning systems
+
+This primarily informs technical orientation, not overall practical fluency.
+
+### Question 11: Responsibility and Authority
+
+Which best describes your relationship to AI-assisted work?
+
+- I primarily complete my own tasks
+- I review other people's work
+- I supervise personnel or approve products
+- I develop policy or manage organizational risk
+- I build or operate technical systems
+
+This should influence recommendations for human oversight, governance, evaluation, and technical training.
+
+### Question 12: Learning Constraints and Preferences
+
+Ask: how much time can you normally devote to AI learning each week?
+
+- Less than 30 minutes
+- 30 to 60 minutes
+- 1 to 2 hours
+- 2 to 4 hours
+- More than 4 hours
+
+Also collect preferred formats:
+
+- Reading
+- Video
+- Interactive lesson
+- Hands-on exercise or lab
+- No preference
+
+## Assessment Result Requirements
+
+After scoring, display:
+
+- Practical AI fluency result
+- Technical-orientation result
+- A short explanation of the evidence that contributed to each result
+- A question asking whether the result seems accurate
+
+Users may indicate:
+
+- Yes, it seems accurate
+- It seems too low
+- It seems too high
+- I am not sure
+
+This feedback is for pilot calibration. It should not automatically replace the calculated result without recording both values.
+
+## Scoring Principles
+
+Keep scoring rules and thresholds configurable and separate from the interface.
+
+The calculation should follow these principles:
+
+- Demonstrated behaviors carry more weight than use frequency.
+- Verification and responsible-use judgment contribute to practical fluency.
+- Technical experience primarily contributes to technical orientation.
+- Supervisory and governance responsibilities affect recommended content but do not automatically increase expertise.
+- Frequent use without verification practices should not produce an advanced rating.
+- Coding experience without responsible-use or evaluation skills should not produce an advanced practical-fluency rating.
+- A user may be highly experienced in leadership or governance while having a general-user technical orientation.
+- A user may be technically advanced while still needing foundational responsible-use training.
+
+## Role Alignment Principle
+
+Recommendations must combine:
+
+- Professional field
+- Work patterns
+- Practical AI fluency
+- Technical orientation
+- Learning goals
+- Responsibility for review, leadership, governance, or system development
+- Available learning time
+- Preferred format
+
+The system should not assume that all members of one career field need the same pathway.
+
+For example:
+
+- An intelligence analyst may need source verification, hallucination detection, structured analysis, and data-evaluation training.
+- A maintenance or logistics user may need workflow support, troubleshooting assistance, predictive concepts, and human review of recommendations.
+- A planner may need assumptions testing, option comparison, and limitations of AI-supported decision aids.
+- A leader may need governance, accountability, risk management, and review of AI-assisted work.
+- A developer may need evaluation, responsible-system design, APIs, automation, and technical implementation.
+- An educator may need audience adaptation, lesson development, evaluation, and responsible classroom use.
+
+These examples illustrate matching logic and must not require users to disclose actual missions, systems, or operational details.
+
 ## Technology Architecture
 
 - Public hosting: GitHub Pages.

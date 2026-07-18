@@ -45,6 +45,7 @@ Open `http://localhost:8000/`.
 
 Before declaring a task complete:
 
+- Run `node --test` when automated tests are present.
 - Verify the normal navigation flow with keyboard and pointer.
 - Confirm the safety warning is clearly visible.
 - Confirm missing or corrupted app-owned `localStorage` does not crash the app.
