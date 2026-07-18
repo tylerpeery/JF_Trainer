@@ -1,4 +1,5 @@
 const DEFAULT_AUTH_REDIRECT_PATH = "./";
+const PASSWORD_RECOVERY_MODE = "password-recovery";
 
 export function isSupabaseConfigured(config = {}) {
   const browserSafeKey = config.supabasePublishableKey || config.supabaseAnonKey;
@@ -18,6 +19,12 @@ export function getAuthRedirectUrl(config = {}, location = globalThis.location) 
     : DEFAULT_AUTH_REDIRECT_PATH;
 
   return new URL(path, location.href).toString();
+}
+
+export function getPasswordRecoveryRedirectUrl(config = {}, location = globalThis.location) {
+  const redirectUrl = new URL(getAuthRedirectUrl(config, location));
+  redirectUrl.searchParams.set("mode", PASSWORD_RECOVERY_MODE);
+  return redirectUrl.toString();
 }
 
 export async function createSupabaseBrowserClient(config = {}) {

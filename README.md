@@ -6,7 +6,7 @@ Users will complete a short assessment, receive an explainable learning path, fo
 
 ## Project Status
 
-This project is implemented through Phase 6: Guest Transfer, Polish, And Pilot Readiness. Phase 6 includes the static application shell, safety warning, configuration data, Joint Force-oriented assessment flow, profile scoring with evidence explanations, verified free-resource catalog records, deterministic recommendations, internal practice cards, guest progress tracking, milestone displays, achievement displays, export, reset, optional Supabase authentication, hybrid account storage, Row Level Security SQL, guest-to-account import, accessible completion animation, tests, and profile-accuracy feedback.
+This project is implemented through Phase 6: Guest Transfer, Polish, And Pilot Readiness. Phase 6 includes the static application shell, safety warning, configuration data, Joint Force-oriented assessment flow, profile scoring with evidence explanations, verified free-resource catalog records, deterministic recommendations, internal practice cards, guest progress tracking, milestone displays, achievement displays, export, reset, optional Supabase email/password and magic-link authentication, hybrid account storage, Row Level Security SQL, guest-to-account import, accessible completion animation, tests, and profile-accuracy feedback.
 
 It is intended for a small pilot group of approximately 3 to 12 testers. It is not intended for large-scale deployment, enterprise use, official certification, or operational-readiness determinations.
 
@@ -43,7 +43,7 @@ The MVP uses:
 - JavaScript ES modules
 - GitHub Pages
 - Browser `localStorage` for guest mode
-- Supabase for optional authentication and account-saved progress
+- Supabase Auth for optional email/password authentication, optional magic links, and account-saved progress
 - Static JSON configuration and catalog data
 - A deterministic, rules-based recommendation engine
 
@@ -176,7 +176,7 @@ Implemented through Phase 6:
 - Optional five- and ten-hour milestone reflections
 - Guest data export and reset
 - Supabase browser client setup, disabled by default until configured
-- Magic-link authentication UI for configured Supabase projects
+- Email/password authentication UI and optional magic-link authentication UI for configured Supabase projects
 - Hybrid account storage adapter for authenticated user state and reportable rows
 - Row Level Security SQL in `supabase/schema.sql`
 - Guest-to-account import with stable-ID deduplication
@@ -198,6 +198,12 @@ Never place a service-role key, database password, or private secret in frontend
 
 The Supabase schema uses a hybrid storage model. `pathfinder_user_states` stores the full app snapshot for account sync, while reportable tables store profile, assessment, progress, feedback, reflection, and achievement rows for future dashboards. Dashboard UI and administrator reporting access are not implemented in the MVP.
 
+Supabase Auth handles password signup, password sign-in, sign-out, session restoration, optional magic links, password reset email preparation, recovery-session password updates, and ordinary signed-in password changes from Account Settings. Pathfinder does not store passwords in app tables, browser storage, exports, or custom hashes.
+
+Password reset emails return to `?mode=password-recovery`, which keeps the app in a dedicated new-password flow instead of ordinary signed-in onboarding. For a controlled pilot, email confirmation may be temporarily disabled if the default Supabase mail service is too rate limited. Routine password sign-in does not require an authentication email, but password reset, magic links, and email verification still require working email delivery. Configure custom SMTP before wider deployment, then re-enable email confirmation after SMTP is operational.
+
+Users who originally signed in with a Supabase magic link may not have a password set. To enable email/password sign-in for that account, use **Send password reset email** from the sign-in panel, open the recovery link, and choose a new password. After that, the account can use normal email/password sign-in.
+
 ## Training Catalog
 
 The training catalog includes verified free resources from reputable providers, with source notes and verification dates stored in `data/training-resources.json`.
@@ -216,9 +222,9 @@ Users should not enter:
 - Protected medical information
 - Personally identifiable information
 - Proprietary organizational information
-- Account credentials or passwords
+- Account credentials or passwords outside Supabase Auth controls
 
-The MVP should collect only the minimum information required to create recommendations and track learning progress. Guest mode stores assessment, progress, optional completion feedback, and optional milestone reflections in browser `localStorage`; account mode stores the same app-managed state and reportable fields in Supabase by authenticated user ID. Signed-in users may import local guest data into their account. Supabase Auth handles sign-in email for account access; Pathfinder tables do not store email, rank, unit, mission, clearance, or operational details.
+The MVP should collect only the minimum information required to create recommendations and track learning progress. Guest mode stores assessment, progress, optional completion feedback, and optional milestone reflections in browser `localStorage`; account mode stores the same app-managed state and reportable fields in Supabase by authenticated user ID. Signed-in users may import local guest data into their account. Supabase Auth handles login email and passwords for account access; Pathfinder tables do not store email, passwords, rank, unit, mission, clearance, or operational details.
 
 ## Accessibility
 

@@ -26,8 +26,9 @@ This repository implements the AI Training Pathfinder MVP as a static GitHub Pag
 
 - Never commit private credentials, secrets, Supabase service-role keys, or private API keys.
 - Browser code may only use the Supabase project URL and browser-safe publishable key.
+- Passwords must go only through Supabase Auth methods; never store passwords in Pathfinder tables, browser storage, exports, logs, or custom hashes.
 - Supabase account storage uses one app-state snapshot row plus normalized report tables; keep all user-owned tables protected by Row Level Security.
-- Warn users not to enter classified, controlled, operationally sensitive, medical, personally identifiable, proprietary, credential, or other protected information.
+- Warn users not to enter classified, controlled, operationally sensitive, medical, personally identifiable, proprietary, credential, or other protected information in assessment, progress, or feedback fields.
 - Do not fabricate external training titles, providers, URLs, durations, certificates, free status, or verification evidence.
 - Placeholder catalog entries must be unmistakably labeled as unverified sample data.
 

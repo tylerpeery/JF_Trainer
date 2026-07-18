@@ -8,7 +8,7 @@ AI Training Pathfinder helps users find free AI training tailored to their profe
 
 The MVP is a small demonstration pilot for approximately 3 to 12 testers. It is not intended for enterprise authentication, CAC integration, organizational reporting, high-security information handling, paid-course transactions, automated certificate verification, supervisor surveillance, or readiness certification.
 
-Users must be warned not to enter classified, controlled, operationally sensitive, medical, personally identifiable, proprietary, credential, or other sensitive information.
+Users must be warned not to enter classified, controlled, operationally sensitive, medical, personally identifiable, proprietary, credential, or other sensitive information in assessment, progress, feedback, or other app-content fields.
 
 ## Joint Force Design Context
 
@@ -567,16 +567,30 @@ Guest/demo mode:
 Account mode:
 
 - Supabase authentication.
+- Supabase Auth supports email-and-password account creation, email-and-password sign-in, sign-out, session restoration, optional magic links, and password-reset email preparation.
+- Password-reset email links must return to a dedicated password-recovery mode. Recovery mode must listen for Supabase `PASSWORD_RECOVERY`, show a new-password form, and defer ordinary signed-in onboarding, display-name prompts, and guest-data transfer until the password update succeeds, the user cancels/signs out, or the recovery session is invalid.
+- Ordinary signed-in users must also have an Account Settings option to set or change a password through Supabase Auth, including users originally created through magic-link authentication.
 - Progress available across devices.
 - Each user may access only their own profile, assessment, progress, and achievements.
 - Training catalog data may be publicly readable.
 - Use Row Level Security.
 - Browser code may use the Supabase project URL and browser-safe publishable key only.
+- Passwords must be sent only through Supabase Auth methods. Pathfinder must not store passwords in application tables, `localStorage`, `sessionStorage`, exports, logs, or custom password hashes.
+- Users may choose an optional display name after authentication. Display name is not a login identifier and must not replace Supabase Auth email/password handling.
 - App-managed account storage uses a hybrid model: one full JSONB state snapshot for app restore plus normalized reportable tables for profiles, assessment results, resource progress, completion feedback, milestone reflections, and earned achievements.
 - App-managed account state is stored by authenticated Supabase user ID and must not include rank, unit, mission, clearance, operational, medical, or other protected information.
 - Dashboard and reporting work may query normalized report tables in a later phase, but user-facing account access must remain limited to each user's own rows unless an explicit administrator/reporting model is approved.
 
 Guest-to-account transfer imports guest assessment, progress, milestone reflections, and earned achievements into the signed-in account. Imported records must be deduplicated by stable IDs so repeated imports do not duplicate learning time, progress points, milestone credit, achievements, or report-table rows.
+
+Pilot email-confirmation behavior:
+
+- Routine password sign-in does not require an authentication email.
+- During a controlled pilot, Supabase email confirmation may be temporarily disabled because the default Supabase mail service is rate limited.
+- The UI must not claim that an email address has been verified when confirmation is disabled.
+- Password reset, magic links, and email verification still require working email delivery.
+- Custom SMTP should be configured before wider deployment.
+- Email confirmation should be re-enabled after custom SMTP is operational.
 
 ## Accessibility
 
@@ -600,11 +614,11 @@ The MVP must not collect or process sensitive information. It must warn users no
 - Medical or protected health information
 - Personally identifiable information
 - Proprietary organizational information
-- Account credentials or passwords
+- Account credentials or passwords outside Supabase Auth controls
 
 The app should collect only the minimum information needed to recommend learning resources and track user-attested learning progress.
 
-For account mode, Supabase Auth may handle sign-in email for authentication. App-managed Pathfinder tables must store only authenticated user ID and normalized app state/reporting fields; they must not store email, rank, unit, mission, clearance, operational details, medical information, or other protected information.
+For account mode, Supabase Auth may handle login email and password authentication. App-managed Pathfinder tables must store only authenticated user ID and normalized app state/reporting fields; they must not store email, passwords, rank, unit, mission, clearance, operational details, medical information, or other protected information.
 
 ## Current Implemented Scope
 
@@ -629,7 +643,8 @@ Implemented through Phase 6:
 - Optional five- and ten-hour milestone reflections
 - Guest data export and reset
 - Optional Supabase browser-client setup controlled by `data/supabase-config.json`
-- Magic-link authentication UI for configured Supabase projects
+- Email/password authentication UI and optional magic-link authentication UI for configured Supabase projects
+- Password-reset email preparation through Supabase Auth
 - Hybrid account storage adapter for assessment, progress, feedback, achievements, and milestone reflections
 - Schema planning and Row Level Security SQL for per-user account state plus normalized report tables
 - Guest-to-account import with stable-ID deduplication

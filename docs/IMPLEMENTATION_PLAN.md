@@ -155,13 +155,15 @@ Status: Complete
 Scope:
 
 - Add Supabase browser client setup.
-- Add authentication UI.
+- Add authentication UI for email/password signup, email/password sign-in, sign-out, session restoration, password-reset preparation, and optional magic links.
+- Add dedicated Supabase password-recovery mode for `PASSWORD_RECOVERY` sessions and an Account Settings password-change option for ordinary signed-in users.
 - Add account storage adapter.
 - Add schema planning and Row Level Security SQL.
 - Save assessment, progress, feedback, achievements, and milestone reflections per authenticated user.
 - Use a hybrid account-storage model with a JSONB app-state snapshot plus normalized report tables for future dashboards and reports.
 - Keep guest mode available when Supabase is not configured.
 - Do not implement guest-to-account transfer.
+- Do not store passwords in Pathfinder tables, browser storage, exports, logs, or custom password hashes.
 
 Acceptance criteria:
 
@@ -169,6 +171,10 @@ Acceptance criteria:
 - Guest mode still works without Supabase.
 - Browser code contains no service-role key or private secret.
 - Auth redirects work on GitHub Pages.
+- Email/password signup and sign-in use Supabase Auth only.
+- Password reset preparation uses Supabase Auth and documents email-delivery dependency.
+- Password reset links return to a recovery-marked app URL and show a new-password form instead of ordinary signed-in onboarding.
+- The UI does not claim email verification when email confirmation is disabled during pilot testing.
 - Account saves update both the app-state snapshot row and the normalized report tables.
 - Normalized report tables use Row Level Security policies scoped to `auth.uid() = user_id`.
 - `node --test` passes for account-storage, report-table, RLS, progress, recommendation, and assessment regression coverage.

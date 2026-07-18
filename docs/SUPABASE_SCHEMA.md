@@ -6,6 +6,7 @@ Phase 5 uses Supabase only for optional account mode. Guest mode continues to wo
 
 - Browser code may use only the Supabase project URL and browser-safe publishable key.
 - Never place a service-role key, private key, database password, or other secret in frontend code.
+- Passwords are handled only by Supabase Auth. Do not add Pathfinder columns, JSON fields, local storage records, exports, logs, or custom hashes for passwords.
 - Row Level Security must be enabled before pilot account testing.
 - Authenticated users may read, insert, update, and delete only their own Pathfinder rows.
 - SQL must explicitly revoke application-table privileges from unauthenticated roles and grant only necessary table privileges to `authenticated`.
@@ -74,6 +75,22 @@ The SQL uses `create table if not exists` and drops/recreates same-named policie
 Add the deployed GitHub Pages URL and local test URL to Supabase Auth redirect allow-list entries, for example:
 
 - `https://USERNAME.github.io/REPOSITORY-NAME/`
+- `https://USERNAME.github.io/REPOSITORY-NAME/?mode=password-recovery`
 - `http://localhost:8000/`
+- `http://localhost:8000/?mode=password-recovery`
 
 Keep `data/supabase-config.json` `authRedirectPath` as `"./"` so redirects resolve correctly from a GitHub Pages repository subdirectory.
+
+## Supabase Auth Settings
+
+Enable the Supabase Email provider for email-and-password signup, email-and-password sign-in, password reset emails, and optional magic links.
+
+Password reset requests use the same GitHub Pages-aware redirect logic as sign-in, plus `?mode=password-recovery`. When Supabase emits `PASSWORD_RECOVERY`, the app shows a dedicated new-password form and defers ordinary signed-in account setup, display-name prompts, and guest-data import until recovery is resolved.
+
+For a controlled pilot, email confirmation may be temporarily disabled if the default Supabase mail service is too rate limited. The application is written so routine password sign-in does not require an authentication email and does not claim that an email address is verified. Password reset, magic links, and email verification still require working email delivery.
+
+Before wider deployment:
+
+- Configure custom SMTP in Supabase Auth settings.
+- Re-enable email confirmation after SMTP is operational.
+- Re-test signup, sign-in, sign-out, password reset, magic link, session restoration, and user isolation.
