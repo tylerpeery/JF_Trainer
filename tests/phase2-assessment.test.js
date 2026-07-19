@@ -229,7 +229,7 @@ test("validator rejects too many secondary fields", () => {
     baseAnswers({
       secondaryFields: [
         "Operations and mission planning",
-        "Maintenance and logistics",
+        "Maintenance",
         "Healthcare"
       ]
     }),
@@ -334,7 +334,7 @@ test("corrupted stored assessment data is discarded without crashing", () => {
     activeView: "assessment",
     guestStartedAt: "2026-01-01T00:00:00.000Z",
     assessment: {
-      assessmentVersion: "phase-2-joint-force-v2",
+      assessmentVersion: "phase-2-joint-force-v3",
       practicalFluency: { level: { id: "applied-user" } },
       technicalOrientation: { level: { id: "general-user" } },
       answers: {}

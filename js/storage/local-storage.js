@@ -1,6 +1,6 @@
 const STORAGE_KEY = "ai-training-pathfinder:guest-state:v1";
 const CURRENT_VERSION = 1;
-export const SUPPORTED_ASSESSMENT_VERSION = "phase-2-joint-force-v2";
+export const SUPPORTED_ASSESSMENT_VERSION = "phase-2-joint-force-v3";
 
 export function createDefaultState(overrides = {}) {
   return {

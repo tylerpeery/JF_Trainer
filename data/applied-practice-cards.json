@@ -50,11 +50,11 @@
     "active": true
   },
   {
-    "id": "practice-maintenance-logistics-workflow",
-    "title": "Maintenance and logistics workflow challenge",
+    "id": "practice-maintenance-troubleshooting-workflow",
+    "title": "Maintenance troubleshooting workflow challenge",
     "provider": "AI Training Pathfinder",
     "description": "Use fictional maintenance tickets to design an AI-assisted triage workflow with human review points.",
-    "professionalFields": ["Maintenance and logistics", "Administration and general support", "Other"],
+    "professionalFields": ["Maintenance", "Administration and general support", "Other"],
     "workPatterns": ["sustain-optimize", "plan-decide"],
     "practicalFluencyLevels": ["foundational-user", "applied-user", "advanced-practitioner"],
     "technicalOrientations": ["general-user", "productivity-low-code", "developer-data-practitioner"],
@@ -72,6 +72,31 @@
     ],
     "deliverable": "A triage prompt, workflow sketch, and review checklist.",
     "safetyReminder": "Do not use actual maintenance data, equipment identifiers, or readiness information.",
+    "active": true
+  },
+  {
+    "id": "practice-logistics-demand-workflow",
+    "title": "Logistics demand-planning workflow challenge",
+    "provider": "AI Training Pathfinder",
+    "description": "Use fictional supply requests to design an AI-assisted demand review workflow with human approval points.",
+    "professionalFields": ["Logistics", "Administration and general support", "Other"],
+    "workPatterns": ["sustain-optimize", "plan-decide", "analyze-information"],
+    "practicalFluencyLevels": ["foundational-user", "applied-user", "advanced-practitioner"],
+    "technicalOrientations": ["general-user", "productivity-low-code", "developer-data-practitioner"],
+    "estimatedMinutes": 25,
+    "format": "Hands-on exercise or lab",
+    "formatId": "hands-on-lab",
+    "learningGoals": ["automate-repetitive-tasks", "evaluate-outputs", "work-with-data"],
+    "responsibilityIds": ["own-tasks", "review-others", "supervise-approve"],
+    "pathStage": "Hands-on practice",
+    "fictionalScenario": "A fictional supply office has six nonsensitive requests for generic classroom and office materials.",
+    "steps": [
+      "Group fictional requests by urgency, uncertainty, and likely follow-up needed.",
+      "Draft an AI-assisted review prompt that uses only nonsensitive request text.",
+      "Add human approval points before ordering, substitution, or priority decisions."
+    ],
+    "deliverable": "A demand-review prompt, workflow sketch, and human-approval checklist.",
+    "safetyReminder": "Do not use actual supply data, locations, unit names, readiness information, or operational requirements.",
     "active": true
   },
   {

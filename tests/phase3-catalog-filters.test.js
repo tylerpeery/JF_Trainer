@@ -39,7 +39,8 @@ test("catalog filter options expose configured levels, stages, fields, work patt
       "Optional deeper learning"
     ]
   );
-  assert.ok(options.professionalField.some((option) => option.label === "Maintenance and logistics"));
+  assert.ok(options.professionalField.some((option) => option.label === "Maintenance"));
+  assert.ok(options.professionalField.some((option) => option.label === "Logistics"));
   assert.equal(options.professionalField.some((option) => option.label === "Other"), false);
   assert.ok(options.workPattern.some((option) => option.id === "sustain-optimize"));
   assert.ok(options.tags.some((option) => option.id === "governance"));
@@ -65,7 +66,7 @@ test("catalog filters match categories, tags, aptitude levels, fields, and work 
     {
       id: "maintenance-workflow",
       title: "Maintenance workflow lab",
-      professionalFields: ["Maintenance and logistics"],
+      professionalFields: ["Maintenance"],
       workPatterns: ["sustain-optimize"],
       practicalFluencyLevels: ["applied-user"],
       technicalOrientations: ["productivity-low-code"],
@@ -99,7 +100,7 @@ test("catalog filters match categories, tags, aptitude levels, fields, and work 
   assert.deepEqual(
     filterCatalogItems(items, {
       ...createDefaultCatalogFilters(),
-      professionalField: ["Maintenance and logistics"]
+      professionalField: ["Maintenance"]
     }).map((item) => item.id),
     ["all-fields-foundation", "maintenance-workflow"]
   );

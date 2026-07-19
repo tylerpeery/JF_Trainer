@@ -56,7 +56,7 @@ class FakeSupabaseClient {
 const user = { id: "00000000-0000-4000-8000-000000000456" };
 
 const assessment = {
-  assessmentVersion: "phase-2-joint-force-v2",
+  assessmentVersion: "phase-2-joint-force-v3",
   completedAt: "2026-07-18T00:00:00.000Z",
   practicalFluency: {
     level: { id: "foundational-user", label: "Foundational user" },

@@ -40,15 +40,16 @@ Users select one primary professional field and may select up to two secondary f
 
 1. Intelligence, research, and analysis
 2. Operations and mission planning
-3. Maintenance and logistics
-4. Acquisition and program management
-5. Cybersecurity and information technology
-6. Software development, data, and AI
-7. Healthcare
-8. Education, training, and communication
-9. Leadership, policy, and governance
-10. Administration and general support
-11. Other
+3. Maintenance
+4. Logistics
+5. Acquisition and program management
+6. Cybersecurity and information technology
+7. Software development, data, and AI
+8. Healthcare
+9. Education, training, and communication
+10. Leadership, policy, and governance
+11. Administration and general support
+12. Other
 
 These fields should remain configurable.
 
@@ -296,7 +297,8 @@ The system should not assume that all members of one career field need the same 
 For example:
 
 - An intelligence analyst may need source verification, hallucination detection, structured analysis, and data-evaluation training.
-- A maintenance or logistics user may need workflow support, troubleshooting assistance, predictive concepts, and human review of recommendations.
+- A maintenance user may need troubleshooting support, technical-document retrieval, predictive concepts, and human review of recommendations.
+- A logistics user may need demand forecasting, supply-chain workflow support, prioritization assistance, and human review of recommendations.
 - A planner may need assumptions testing, option comparison, and limitations of AI-supported decision aids.
 - A leader may need governance, accountability, risk management, and review of AI-assisted work.
 - A developer may need evaluation, responsible-system design, APIs, automation, and technical implementation.
@@ -342,7 +344,8 @@ Users select one primary professional field and up to two secondary fields:
 
 - Intelligence, research, and analysis
 - Operations and mission planning
-- Maintenance and logistics
+- Maintenance
+- Logistics
 - Acquisition and program management
 - Cybersecurity and information technology
 - Software development, data, and AI
@@ -531,7 +534,8 @@ Initial practice card themes:
 
 - Analyst evaluation challenge
 - Planning assumptions challenge
-- Maintenance or logistics workflow challenge
+- Maintenance troubleshooting workflow challenge
+- Logistics demand-planning workflow challenge
 - Leadership and human-approval challenge
 - Trainer audience-adaptation challenge
 - Healthcare privacy and verification challenge

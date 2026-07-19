@@ -39,7 +39,7 @@ const expectedDurationMinutes = new Map([
 
 function assessment(overrides = {}) {
   return {
-    assessmentVersion: "phase-2-joint-force-v2",
+    assessmentVersion: "phase-2-joint-force-v3",
     practicalFluency: {
       level: { id: "applied-user", label: "Applied user" },
       evidence: []
@@ -163,10 +163,10 @@ test("analyst profile receives analysis-oriented role-aligned and practice recom
   assert.ok(allItems.some((item) => item.id === "practice-analyst-evaluation-challenge"));
 });
 
-test("maintenance and logistics profile receives workflow-support practice", () => {
+test("maintenance profile receives maintenance workflow-support practice", () => {
   const path = pathFor({
     selections: {
-      primaryField: "Maintenance and logistics",
+      primaryField: "Maintenance",
       workPatterns: ["sustain-optimize", "plan-decide"],
       learningGoals: ["automate-repetitive-tasks", "evaluate-outputs"],
       preferredFormats: ["hands-on-lab"]
@@ -174,7 +174,21 @@ test("maintenance and logistics profile receives workflow-support practice", () 
   });
   const handsOnStage = path.stages.find((stage) => stage.stage === "Hands-on practice");
 
-  assert.ok(handsOnStage.items.some((item) => item.id === "practice-maintenance-logistics-workflow"));
+  assert.ok(handsOnStage.items.some((item) => item.id === "practice-maintenance-troubleshooting-workflow"));
+});
+
+test("logistics profile receives logistics workflow-support practice", () => {
+  const path = pathFor({
+    selections: {
+      primaryField: "Logistics",
+      workPatterns: ["sustain-optimize", "plan-decide"],
+      learningGoals: ["automate-repetitive-tasks", "work-with-data"],
+      preferredFormats: ["hands-on-lab"]
+    }
+  });
+  const handsOnStage = path.stages.find((stage) => stage.stage === "Hands-on practice");
+
+  assert.ok(handsOnStage.items.some((item) => item.id === "practice-logistics-demand-workflow"));
 });
 
 test("governance profile receives responsible-use and leadership-aligned content without requiring technical orientation", () => {

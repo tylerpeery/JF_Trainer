@@ -1,5 +1,5 @@
 {
-  "assessmentVersion": "phase-2-joint-force-v2",
+  "assessmentVersion": "phase-2-joint-force-v3",
   "profileThresholds": {
     "practicalFluency": [
       { "maxScore": 0.74, "levelId": "new-to-ai" },
